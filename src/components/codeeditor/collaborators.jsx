@@ -31,8 +31,7 @@ const Collaborators = ({ providerState, username }) => {
 
     return (
         <>
-        <div className='text-lg'>Collaborators</div>
-        <ul className="list-disc list-inside bg-white p-4">
+        <ul className="list-disc list-inside bg-white p-1">
         {
             collaborators.map((collaborator, index) => (
                 <li className="mb-2" key={index}>

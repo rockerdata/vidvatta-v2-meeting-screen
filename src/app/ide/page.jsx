@@ -13,7 +13,7 @@ const initialEditors = [];
 
 const Page = ({user}) => {
 
-    const roomName = user.username
+    const roomName = "session1"
 
     return (
         <>{user && <Room username={user.username} roomName={roomName}/>}</>

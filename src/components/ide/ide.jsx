@@ -117,17 +117,20 @@ const Ide = ({username}) => {
                 <div className=' items-center bg-black  w-7 h-7 rounded-full'>
                 </div>
             </div>
+            <div className='text-center'>Collaborators</div>
+            <div className=' w-3/12 border-solid border-2'>
+                {yjsConnectionStatus && <Collaborators providerState={yjsManagerState.provider} username={username}/>}
+            </div>
+
         </div>
 
         <div className='flex gap-3 ml-2 mr-2'>
-            <div className=' w-9/12'>
+            <div className=' w-11/12'>
                 {editors.map((editor, index) => (
                     <div className=' mb-3' key={index}>{editor}</div>
                 ))}
             </div>
-            <div className=' w-3/12 border-solid border-2'>
-                {yjsConnectionStatus && <Collaborators providerState={yjsManagerState.provider} username={username}/>}
-            </div>
+
         </div>
         </div>
     );
