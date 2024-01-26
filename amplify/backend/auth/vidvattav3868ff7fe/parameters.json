@@ -1,0 +1,18 @@
+{
+  "authSelections": "identityPoolAndUserPool",
+  "resourceName": "vidvattav3868ff7fe",
+  "serviceType": "imported",
+  "region": "ap-south-1",
+  "authProvidersUserPool": [],
+  "requiredAttributes": [
+    "email",
+    "birthdate"
+  ],
+  "passwordPolicyMinLength": 8,
+  "passwordPolicyCharacters": [],
+  "mfaConfiguration": "OFF",
+  "autoVerifiedAttributes": [
+    "email"
+  ],
+  "mfaTypes": []
+}

@@ -1,0 +1,101 @@
+{
+  "auth": {
+    "vidvattav3868ff7fe": {
+      "customAuth": false,
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito",
+      "serviceType": "imported"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_auth_vidvattav3868ff7fe_allowUnauthenticatedIdentities": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "vidvattav3868ff7fe"
+        }
+      ]
+    },
+    "AMPLIFY_auth_vidvattav3868ff7fe_authRoleArn": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "vidvattav3868ff7fe"
+        }
+      ]
+    },
+    "AMPLIFY_auth_vidvattav3868ff7fe_authRoleName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "vidvattav3868ff7fe"
+        }
+      ]
+    },
+    "AMPLIFY_auth_vidvattav3868ff7fe_identityPoolId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "vidvattav3868ff7fe"
+        }
+      ]
+    },
+    "AMPLIFY_auth_vidvattav3868ff7fe_identityPoolName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "vidvattav3868ff7fe"
+        }
+      ]
+    },
+    "AMPLIFY_auth_vidvattav3868ff7fe_nativeClientId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "vidvattav3868ff7fe"
+        }
+      ]
+    },
+    "AMPLIFY_auth_vidvattav3868ff7fe_unauthRoleArn": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "vidvattav3868ff7fe"
+        }
+      ]
+    },
+    "AMPLIFY_auth_vidvattav3868ff7fe_unauthRoleName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "vidvattav3868ff7fe"
+        }
+      ]
+    },
+    "AMPLIFY_auth_vidvattav3868ff7fe_userPoolId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "vidvattav3868ff7fe"
+        }
+      ]
+    },
+    "AMPLIFY_auth_vidvattav3868ff7fe_userPoolName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "vidvattav3868ff7fe"
+        }
+      ]
+    },
+    "AMPLIFY_auth_vidvattav3868ff7fe_webClientId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "vidvattav3868ff7fe"
+        }
+      ]
+    }
+  }
+}
