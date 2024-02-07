@@ -1,25 +1,39 @@
 "use client"
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { python } from '@codemirror/lang-python';
 import {UndoManager} from 'yjs';
 import { yCollab } from 'y-codemirror.next';
+import ReactMarkdown from 'react-markdown'
+import snarkdown from 'snarkdown';
+import dompurify from 'dompurify';
 
-const YjsCodeMirror = ({yjsManager, setFocusedEditor, counter}) => {
+const YjsCodeMirror = ({yjsManager, setFocusedEditor, counter, kernelManagerRef}) => {
   const [value, setValue] = useState('');
   const [yjsExtension, setYjsExtension] = useState(null);
   const [output, setOutput] = useState('');
   const [yOutputState, setyOutputState] = useState('');
+  const yOutputManager = useRef(null);
   const [enableOutput, setEnableOutput] = useState(false);
 
     useEffect(() => {
         
         const ytext = yjsManager.ydoc.getText(`counter-${counter}`);
+        // const yOutput = yjsManager.ydoc.getText(`outputter-${counter}`);
         const yOutput = yjsManager.ydoc.getText(`output-${counter}`);
+        // yy.insert(0, 'hello this si yy')
         const undoManager = new UndoManager(ytext);
         setValue(ytext.toString());
         setYjsExtension(yCollab(ytext, yjsManager.provider.awareness, { undoManager }));
         setyOutputState(yOutput);
+        yOutputManager.current = yOutput;
+        console.log('youtput', yOutput.toString());
+        if(yOutput.toString() != ""){
+          setEnableOutput(true);
+          setOutput(yOutput.toString());
+        }
+        // yOutputManager.current.insert(0, 'hel')
+
 
         yOutput.observe(event => {
           if(yOutput.length != 0){
@@ -53,14 +67,68 @@ const YjsCodeMirror = ({yjsManager, setFocusedEditor, counter}) => {
     setFocusedEditor(counter);
   }
 
+  const rawMarkup = (data) => {
+    console.log(data);
+    const sanitizer = dompurify.sanitize;
+    return  snarkdown(sanitizer(data)) ;
+  };
+
   const runCode = () => {
-    console.log('runCode');
-    yOutputState.delete(0, yOutputState.length);
-    yOutputState.insert(0, 'Running...')
-    setTimeout(() => {
-      yOutputState.delete(0, yOutputState.length);
-      yOutputState.insert(0, 'Hello World')
-    }, 1000);
+    console.log('runCode', value);
+    let result = "";
+    const future = kernelManagerRef.kernelManager.requestExecute({code: value});
+    // this.kernelManager.request
+    yOutputManager.current.delete(0, yOutputManager.current.length);
+    yOutputManager.current.insert(0, 'Running...')
+
+    future.onIOPub = (msg) => {
+      console.log(msg);
+      // yOutputManager.current.delete(0, yOutputManager.current.length);
+      if (msg.header.msg_type === "execute_input") {
+        let cellNo = msg.content.execution_count;
+        console.log(cellNo);
+        
+      }
+      if (msg.content.name === "stdout") {
+        console.log('stdout', msg.content.text)
+        result = msg.content.text.replace(/(\r\n|\n|\r)/gm, "</br>")
+        // yOutputManager.current.insert(0, msg.content.text.replace(/(\r\n|\n|\r)/gm, "</br>"))
+      }
+    
+      if (msg.content.data) {
+        if ("text/html" in msg.content.data) {
+          result = msg.content.data["text/html"];
+          // yOutputManager.current.insert(0, text);
+        }
+        else if ("image/png" in msg.content.data) {
+          result = msg.content.data["image/png"];
+          var image = '<img src="' + "data:image/png;base64," + result + '"/>';
+        }
+        else if ("text/plain" in msg.content.data) {
+          result = "<pre>" + msg.content.data["text/plain"] + "</pre>";
+          // yOutputManager.current.insert(0, text);
+        }
+      }
+      if (result !== ""){
+        yOutputManager.current.delete(0, yOutputManager.current.length);
+        yOutputManager.current.insert(0, result);
+      }
+    }
+
+    future.onReply = (reply) => {
+        console.log("Got execute reply ", reply);
+    }
+
+    future.done.then(() => {
+        console.log("Future is fulfilled");
+    })
+    // kernelManagerRef.runCode(value);
+    // yOutputState.delete(0, yOutputState.length);
+    // yOutputState.insert(0, 'Running...')
+    // setTimeout(() => {
+    //   yOutputState.delete(0, yOutputState.length);
+    //   yOutputState.insert(0, 'Hello World')
+    // }, 1000);
   };
 
   return (
@@ -68,7 +136,7 @@ const YjsCodeMirror = ({yjsManager, setFocusedEditor, counter}) => {
     {yjsExtension && 
     <div className=' '>
       <div className='p-2 flex gap-3 border-solid border-2 text-lg'>
-        <div className=' '>
+        <div className='w-14'>
           <div className=' cursor-pointer' onClick={runCode}>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7 text-green-600 shadow-sm hover:shadow-lg">
               <path fillRule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clipRule="evenodd" />
@@ -103,7 +171,7 @@ const YjsCodeMirror = ({yjsManager, setFocusedEditor, counter}) => {
           <div className='flex flex-row gap-1 w-18 '>
             <div >Out [{counter}]</div>
           </div>
-          {output}
+          <div className='prose' ><div dangerouslySetInnerHTML={{__html: output}}/></div>
         </div>}
     </div>
     }

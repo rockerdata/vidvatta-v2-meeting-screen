@@ -7,6 +7,7 @@ import Room  from 'src/components/collaboration/Room'
 import amplifyconfig from 'src/amplifyconfiguration.json';
 import { Amplify } from 'aws-amplify';
 import { withAuthenticator } from '@aws-amplify/ui-react';
+import { Toaster } from "src/components/ui/toaster"
 Amplify.configure(amplifyconfig);
 
 const initialEditors = [];
@@ -16,7 +17,9 @@ const Page = ({user}) => {
     const roomName = "session1"
 
     return (
-        <>{user && <Room username={user.username} roomName={roomName}/>}</>
+        <><Toaster />
+        {user && <Room username={user.username} roomName={roomName}/>}
+        </>
     );
 
 }

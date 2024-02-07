@@ -6,8 +6,12 @@ import LiveblocksProvider from "@liveblocks/yjs";
 class YjsManager {
     constructor(roomName, room, username, setYjsConnectionStatus) {
         // this.room = useRoom();
+        this.yjsStatus = false
         this.ydoc = new Y.Doc();
         this.cells = this.ydoc.getArray('cells');
+        this.kernel = this.ydoc.getText('kernel');
+        this.kernelId = this.ydoc.getText('kernelId');
+        this.status = this.ydoc.getText('kernelstatus');
         // this.provider = new WebsocketProvider('ws://localhost:1234', roomName, this.ydoc);
         this.provider = new LiveblocksProvider(room, this.ydoc);
 
@@ -24,11 +28,13 @@ class YjsManager {
             if (isSynced === true) {
               // Yjs content is synchronized and ready
                 console.log("Connected")
+                this.yjsStatus = true
                 this.setupProvider(username);
                 setYjsConnectionStatus(true);
             } else {
               // Yjs content is not synchronized
-              console.log("Failed")
+              console.log("Failed");
+              this.yjsStatus = false;
             }
           });
 
