@@ -17,76 +17,84 @@ const EditorKernel = ({yjsManagerState, username, kernelManagerRef}) => {
                 event.changes.delta.forEach(change => {
                     if (change.insert){
                         console.log('change insert', change.insert);
-                        kernelManagerRef.startKernel(change.insert, yjsManagerState);
+                        kernelManagerRef.startKernel(change.insert, yjsManagerState).then((res) => {
+                            toast({
+                                title: "Kernel Status",
+                                description: "Existing Kernel Started",
+                              })
+                        }).catch((error) => {
+                            console.error("Error starting kernel", error);
+                        });
 
-                        // yjsManagerState.kernelId.delete(0, yjsManagerState.kernelId.length);
-                        console.log(kernelManagerRef.kernelId);
-                        // yjsManagerState.kernelId.insert(0, kernelManagerRef.kernelId);
                     }
                 });
             })
-
-            yjsManagerState.kernelId.observe(event => {
-                event.changes.delta.forEach(change => {
-                    if (change.insert){
-                        console.log("kernel id change detected", change.insert);
-                        // kernelManagerRef.startKernelById(change.insert).then(kernelId => {
-                        //     console.log('kernelId', kernelId);
-                        //     toast({
-                        //         title: "Kernel Status",
-                        //         description: "Existing Kernel Initiated",
-                        //       })
-                        // })
-                    }
-                })
-            });
         }
     }, []);
 
-    const startServer = async () =>{
-        
+    const startServer = async () => {
         toast({
             title: "Kernel Status",
             description: "Kernel Start Initiated",
-          })
-
-          kernelManagerRef.startServer()
-        .then((res) => {
-            // console.log(res);
-            yjsManagerState.kernel.delete(0,yjsManagerState.kernel.length);
+        });
+    
+        try {
+            // Await the resolution of startServer and then proceed
+            await kernelManagerRef.startServer();
+            // Assuming kernelManagerRef.startServer updates kernelStatus internally
+    
+            // Update yjsManagerState with the new kernel status
+            yjsManagerState.kernel.delete(0, yjsManagerState.kernel.length);
             yjsManagerState.kernel.insert(0, JSON.stringify(kernelManagerRef.kernelStatus));
+    
+            // Notify the user of successful start
             toast({
                 title: "Kernel Status",
                 description: "Started Successfully",
-              })
-            // The instance is fully initialized and ready to use
-        })
-        .catch(error => {
-            console.log(error);
-            // Handle errors
-        });
-    }
+            });
+        } catch (error) {
+            console.error(error);
+    
+            // Handle errors and notify the user
+            toast({
+                title: "Kernel Status",
+                description: "Error starting the kernel",
+            });
+        }
+    };
+    
 
-    const stopKernel = () =>{
-        kernelManagerRef.stopServer()
-        .then((res) => {
+    const stopKernel = async () => {
+        try {
+            toast({
+                title: "Kernel Status",
+                description: "Kernel Stop Initiated",
+            });
+    
+            // Attempt to stop the server and wait for the operation to complete
+            const res = await kernelManagerRef.stopServer();
             console.log(res);
+    
+            // Optionally, update the state or perform other actions after stopping the kernel
+            // For example, clearing kernel status from yjsManagerState if needed
+            yjsManagerState.kernel.delete(0, yjsManagerState.kernel.length); // Adjust as per your state management logic
+    
+            // Notify the user of successful stop
             toast({
                 title: "Kernel Status",
                 description: "Stopped Successfully",
-              })
-            // The instance is fully initialized and ready to use
-        })
-        .catch(error => {
+            });
+        } catch (error) {
             console.log(error);
-            // Handle errors
+    
+            // Handle errors and notify the user
             toast({
                 title: "Kernel Status",
-                description: error,
-              })
-        });
-    }
-
+                description: "Stopping failed: " + error.toString(),
+            });
+        }
+    };
+    
   return (
     <div className='flex gap-4 m-5'>
     <button onClick={startServer} className=" bg-blue-400 rounded-md pl-4 pr-4 pt-2 pb-2">

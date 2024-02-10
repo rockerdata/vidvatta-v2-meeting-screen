@@ -3,107 +3,73 @@ import {
     KernelManager,
     KernelAPI,
 } from "@jupyterlab/services";
+import { ConsoleLogger } from "aws-amplify/utils";
 import axios from 'axios';
 
 export default class JupyterKernelManager {
     constructor() {
         // basic initialization
         this.kernelStatus = null;
-        this.kernelId = "";
         this.ipAddress = "";
         this.port = "";
         this.serverConfig = null;
         this.kernelManager = null;
-        this.kernel = null;
-    }
-
-    async startKernelById(kernelId){
-        if(kernelId !== ""){
-            this.serverConfig = ServerConnection.makeSettings({
-                baseUrl: 'http://' + this.ipAddress  + ":" + this.port,
-            })
-
-            fetch("http://"+this.ipAddress+":"+this.port+"/api").then(res => {
-                console.log("Server available")
-            }).catch(err => {
-                console.log("Server not available");
-            })
-
-            KernelAPI.listRunning(this.serverConfig).then((kernelModels) => {
-                console.log("Insert kernel by id", kernelModels);
-                console.log(this.serverConfig);
-                let targetKernelId = kernelId; // Replace this with your actual kernel ID
-
-                // Find the kernel model with the matching ID
-                let targetKernelModel = kernelModels.find(
-                    (kernelModel) => kernelModel.id === targetKernelId
-                );
-                let kernel = new KernelManager({
-                    serverSettings: this.serverConfig,
-                });
-
-                if (targetKernelModel) {
-                    // If a kernel model with the matching ID is found, connect to it
-                    let kernelK = kernel.connectTo({
-                    model: targetKernelModel,
-                    });
-                    this.kernelManager = kernelK;
-                    return kernelK.id;
-                }
-            })
-            .catch(err => {
-                console.log('kernel by id', err);
-            });
-        }
-        return
     }
 
     async startKernel(res, yjsManagerState){
-        this.kernelStatus = JSON.parse(res);
-        this.ipAddress = this.kernelStatus.ipAddress;
-        this.port = this.kernelStatus.port;
-        axios.get('http://' + this.ipAddress  + ":" + this.port + '/api', {timeout: 2000}).then((response) => {
+        try {
+            this.kernelStatus = JSON.parse(res);
+            this.ipAddress = this.kernelStatus.ipAddress;
+            this.port = this.kernelStatus.port;
+    
+            const response = await axios.get('http://' + this.ipAddress  + ":" + this.port + '/api', {timeout: 2000});
             console.log("Kernel is up");
-
+    
             this.serverConfig = ServerConnection.makeSettings({
                 baseUrl: 'http://' + this.ipAddress  + ":" + this.port,
-            })
-
+            });
+    
             let kernel = new KernelManager({
                 serverSettings: this.serverConfig,
             });
-
-            KernelAPI.listRunning(this.serverConfig).then((kernelModels) => {
-                console.log(kernelModels);
-                if(kernelModels.length == 1){
-                    this.kernelManager = kernel.connectTo({
-                        model: kernelModels[0],
-                    });
-                }
-                else{
-                    kernel.startNew({name: "python"})
-                    .then((k) => {
-                        console.log(k);
-                        this.kernelId = k.id;
-                        yjsManagerState.kernelId.delete(0, yjsManagerState.kernelId.length);
-                        yjsManagerState.kernelId.insert(0, k.id);
-                        this.kernelManager = k;
-                        console.log("Kernel Started", k);
-                    })  
-                }
-            });
-        })
-        .catch((err) =>{
-            console.log("Kernel not available");
-            this.ipAddress = ""
-            this.port = ""
-        });        
+    
+            const kernelModels = await KernelAPI.listRunning(this.serverConfig);
+            console.log(kernelModels);
+            if (kernelModels.length === 1) {
+                this.kernelManager = kernel.connectTo({model: kernelModels[0]});
+                yjsManagerState.kernelId.delete(0, yjsManagerState.kernelId.length);
+                yjsManagerState.kernelId.insert(0, this.kernelManager.id);
+                this.kernelManager.statusChanged.connect(trackStatusChanges);
+                return this.kernelManager.id;
+            } else {
+                const k = await kernel.startNew({name: "python"});
+                console.log(k);
+                yjsManagerState.kernelId.delete(0, yjsManagerState.kernelId.length);
+                yjsManagerState.kernelId.insert(0, k.id);
+                this.kernelManager = k;
+                console.log("Kernel Started", k);
+                this.kernelManager.statusChanged.connect(trackStatusChanges);
+                return k.id;
+            }
+        } catch (err) {
+            console.log("Kernel not available", err);
+            this.ipAddress = "";
+            this.port = "";
+            // Ensure to handle or propagate error appropriately
+            throw err; // or return an error indication
+        }        
     }
+    
+
+    trackStatusChanges = (_, status) => {
+        console.log('kernel status', status);
+    }    
 
     async startServer() {
+        console.log("Start Server is called");
         const res = await fetch('http://localhost:3000/api/jupyter/start-server');
         this.kernelStatus = await res.json();
-        // console.log(this.kernelStatus);
+        console.log(this.kernelStatus);
         // this.startKernel()
         return this.kernelStatus
     }
@@ -135,21 +101,39 @@ export default class JupyterKernelManager {
 
     async stopServer() {
         console.log(this.kernelStatus);
-        this.kernelManager.shutdown().then(async (resp) => {
-            const res = await fetch('http://localhost:3000/api/jupyter/stop-server', {
-                method:'POST',
+        
+        try {
+            // First, shut down the kernel manager
+            await this.kernelManager.shutdown();
+            console.log("Kernel shutdown successfully.");
+    
+            // Then, send a request to stop the server
+            const response = await fetch('http://localhost:3000/api/jupyter/stop-server', {
+                method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json' // Indicates the content 
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({taskArn: this.kernelStatus.taskArn})
             });
-            this.kernelStatus = await res.json();
-            return this.kernelStatus
-        })
-        .catch(err => {
-            return err
-        })
-
+    
+            // Check if the fetch request was successful
+            if (!response.ok) {
+                // You can throw an error or handle it accordingly
+                throw new Error(`Server stop failed: ${response.status} ${response.statusText}`);
+            }
+    
+            // Parse the JSON response
+            this.kernelStatus = await response.json();
+            console.log("Server stopped successfully.", this.kernelStatus);
+    
+            // Optionally, return the kernelStatus for further processing
+            return this.kernelStatus;
+        } catch (err) {
+            console.error("Error stopping server:", err);
+            // Depending on your error handling strategy, you might want to rethrow the error or handle it here
+            throw err; // Or return a specific error object/message
+        }
     }
+    
 
 }
