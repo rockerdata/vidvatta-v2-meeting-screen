@@ -9,7 +9,7 @@ import JoinScreen from "./JoinScreen";
 
 
 function App() {
-  const [meetingId, setMeetingId] = useState("rxyl-qr0b-lokc");//"yy6i-uima-4vyv");
+  const [meetingId, setMeetingId] = useState("yy6i-uima-4vyv");
   const [participantId, setParticipantId] = useState("id-124");
 
     useEffect(() => {

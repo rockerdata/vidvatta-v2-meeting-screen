@@ -10,7 +10,7 @@ import { Button } from "../ui/button";
 
 
 function Meeting() {
-  const [meetingId, setMeetingId] = useState("rxyl-qr0b-lokc");//"yy6i-uima-4vyv");
+  const [meetingId, setMeetingId] = useState("yy6i-uima-4vyv");
   const [participantId, setParticipantId] = useState("id-123");
 
     useEffect(() => {
@@ -19,11 +19,13 @@ function Meeting() {
 
   const getMeetingAndToken = async (id) => {
 
-    const tokenResponse = await getTempToken({roomId: "test-meeting", participantId: participantId, isHost: false});
-    console.log('token Response', tokenResponse);
+    // const tokenResponse = await getTempToken({roomId: "test-meeting", participantId: participantId, isHost: false});
+    // console.log('token Response', tokenResponse);
 
+    // const meetingId =
+    //   id == null ? await createMeeting({token: tokenResponse.token}) : id;
     const meetingId =
-      id == null ? await createMeeting({token: tokenResponse.token}) : id;
+    id == null ? await createMeeting() : id;
 
 
     // const meetingId = "yy6i-uima-4vyv";

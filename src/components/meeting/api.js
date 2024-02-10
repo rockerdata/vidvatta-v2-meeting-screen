@@ -1,5 +1,5 @@
 //Auth token we will use to generate a meeting and connect to it
-export const authToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiI4MGFiMTE3Yi1jNGY1LTQxODEtOGRiOC01MjM0YWJiN2QzYmMiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTcwNTE1ODQwMiwiZXhwIjoxNzA1NzYzMjAyfQ.CIgteZn_xFIG3y4x7yi62LqsmZCcjqkPvbLszuKZ6mE";
+export const authToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiI4MGFiMTE3Yi1jNGY1LTQxODEtOGRiOC01MjM0YWJiN2QzYmMiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTcwNzU2MzMyMSwiZXhwIjoxNzE1MzM5MzIxfQ.S6qzHAHI_JUFTBMfQ2m6ybJ-bbVLS0-2ne8lp5GK8ug";
 
 export const getTempToken = async ({roomId, participantId, isHost}) => {
   console.log(roomId, participantId)
@@ -30,7 +30,7 @@ export const createMeeting = async ({ token }) => {
         const url = `https://api.videosdk.live/v2/rooms`;
         const options = {
             method: "POST",
-            headers: { Authorization: token, "Content-Type": "application/json" },
+            headers: { Authorization: authToken, "Content-Type": "application/json" },
         };
 
         const response = await fetch(url, options);

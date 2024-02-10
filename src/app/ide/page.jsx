@@ -5,9 +5,9 @@ import '@aws-amplify/ui-react/styles.css';
 import Room  from 'src/components/collaboration/Room'
 
 import amplifyconfig from 'src/amplifyconfiguration.json';
+import { Toaster } from "src/components/ui/toaster"
 import { Amplify } from 'aws-amplify';
 import { withAuthenticator } from '@aws-amplify/ui-react';
-import { Toaster } from "src/components/ui/toaster"
 Amplify.configure(amplifyconfig);
 
 const initialEditors = [];
