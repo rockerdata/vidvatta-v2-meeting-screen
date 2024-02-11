@@ -7,6 +7,9 @@ import { yCollab } from 'y-codemirror.next';
 import ReactMarkdown from 'react-markdown'
 import snarkdown from 'snarkdown';
 import dompurify from 'dompurify';
+import { useJupyterKernelManager } from 'src/utils/kernel/managerHook';
+import { useSharedJupyterKernelManager } from 'src/components/ide/kernelContext';
+
 
 const YjsCodeMirror = ({yjsManager, setFocusedEditor, counter, kernelManagerRef}) => {
   const [value, setValue] = useState('');
@@ -15,6 +18,7 @@ const YjsCodeMirror = ({yjsManager, setFocusedEditor, counter, kernelManagerRef}
   const [yOutputState, setyOutputState] = useState('');
   const yOutputManager = useRef(null);
   const [enableOutput, setEnableOutput] = useState(false);
+  const { kernelManager, runCode } = useSharedJupyterKernelManager();
 
     useEffect(() => {
         
@@ -42,10 +46,18 @@ const YjsCodeMirror = ({yjsManager, setFocusedEditor, counter, kernelManagerRef}
             console.log('output:', yOutput.toString());
             setOutput(yOutput.toString());
           }
+          if (yOutput == " "){
+            setOutput("")
+            setEnableOutput(false)
+          }
         });
 
     }, [yjsManager.ydoc, yjsManager.provider, counter]);
 
+
+  useEffect(() => {
+      console.log("Editor ", kernelManager)
+  }, [kernelManager])
 
   const onChange = (val, viewUpdate) => {
     console.log('val:', val);
@@ -73,10 +85,11 @@ const YjsCodeMirror = ({yjsManager, setFocusedEditor, counter, kernelManagerRef}
     return  snarkdown(sanitizer(data)) ;
   };
 
-  const runCode = () => {
-    console.log('runCode', value);
+  const runCellCode = () => {
+    // console.log('runCode', value);
+    // runCode(value);
     let result = "";
-    const future = kernelManagerRef.kernelManager.requestExecute({code: value});
+    const future = kernelManager.requestExecute({code: value});
     // this.kernelManager.request
     yOutputManager.current.delete(0, yOutputManager.current.length);
     yOutputManager.current.insert(0, 'Running...')
@@ -109,9 +122,14 @@ const YjsCodeMirror = ({yjsManager, setFocusedEditor, counter, kernelManagerRef}
           // yOutputManager.current.insert(0, text);
         }
       }
+
       if (result !== ""){
         yOutputManager.current.delete(0, yOutputManager.current.length);
         yOutputManager.current.insert(0, result);
+      }
+      else{
+        yOutputManager.current.delete(0, yOutputManager.current.length);
+        yOutputManager.current.insert(0, " ");
       }
     }
 
@@ -137,7 +155,7 @@ const YjsCodeMirror = ({yjsManager, setFocusedEditor, counter, kernelManagerRef}
     <div className=' '>
       <div className='p-2 flex gap-3 border-solid border-2 text-lg'>
         <div className='w-14'>
-          <div className=' cursor-pointer' onClick={runCode}>
+          <div className=' cursor-pointer' onClick={runCellCode}>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7 text-green-600 shadow-sm hover:shadow-lg">
               <path fillRule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clipRule="evenodd" />
             </svg>

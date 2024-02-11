@@ -1,4 +1,5 @@
 "use client"
+import React from 'react';
 import dynamic from "next/dynamic";
 import { Amplify } from 'aws-amplify';
 import { withAuthenticator } from '@aws-amplify/ui-react';
@@ -20,4 +21,4 @@ const page = () => {
     </>);
   };
 
-export default withAuthenticator(page);
+export default React.memo(withAuthenticator(page));

@@ -9,6 +9,7 @@ import {actionTypes, editorReducer} from 'src/components/codeeditor/editorReduce
 import { useRoom } from "../../../liveblocks.config";
 import EditorControl from './control'
 import KernelManager from 'src/utils/kernel/manager'
+import { useJupyterKernelManager } from 'src/utils/kernel/managerHook';
 
 const initialEditors = [];
 
@@ -24,6 +25,7 @@ const Ide = ({username}) => {
     const [yjsConnectionStatus, setYjsConnectionStatus] = useState(false);
     const kernelManagerRef = useRef(null);
     const yjsManagerRef = useRef(null);
+    const {kernelDetails, kernelStatus} = useJupyterKernelManager()
 
     const [editors, dispatch] = useReducer(
         editorReducer,

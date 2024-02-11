@@ -8,6 +8,8 @@ import amplifyconfig from 'src/amplifyconfiguration.json';
 import { Toaster } from "src/components/ui/toaster"
 import { Amplify } from 'aws-amplify';
 import { withAuthenticator } from '@aws-amplify/ui-react';
+import { KernelManagerProvider } from 'src/components/ide/kernelContext';
+
 Amplify.configure(amplifyconfig);
 
 const initialEditors = [];
@@ -17,8 +19,11 @@ const Page = ({user}) => {
     const roomName = "session1"
 
     return (
-        <><Toaster />
+        <>
+        <KernelManagerProvider>
+        <Toaster />
         {user && <Room username={user.username} roomName={roomName}/>}
+        </KernelManagerProvider>
         </>
     );
 
