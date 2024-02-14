@@ -4,40 +4,54 @@ import CodeMirror from '@uiw/react-codemirror';
 import { python } from '@codemirror/lang-python';
 import {UndoManager} from 'yjs';
 import { yCollab } from 'y-codemirror.next';
-import ReactMarkdown from 'react-markdown'
 import snarkdown from 'snarkdown';
-import dompurify from 'dompurify';
-import { useJupyterKernelManager } from 'src/utils/kernel/managerHook';
+import DOMPurify  from 'dompurify';
 import { useSharedJupyterKernelManager } from 'src/components/ide/kernelContext';
+import Convert from 'ansi-to-html';
 
+import './editor.css'
 
 const YjsCodeMirror = ({yjsManager, setFocusedEditor, counter, kernelManagerRef}) => {
   const [value, setValue] = useState('');
-  const [yjsExtension, setYjsExtension] = useState(null);
   const [output, setOutput] = useState('');
-  const [yOutputState, setyOutputState] = useState('');
+  const [yjsExtension, setYjsExtension] = useState(null);  
+  const [cellId, setCellId] = useState("");
   const yOutputManager = useRef(null);
+  const yCellIdRef = useRef("");
+  const convert = new Convert({
+    fg: '#000', // default foreground color
+    bg: '#fff', // default background color
+    newline: true, // convert newline characters to <br/>
+    escapeXML: true, // escape HTML entities
+  });
+
+
+
   const [enableOutput, setEnableOutput] = useState(false);
   const { kernelManager, runCode } = useSharedJupyterKernelManager();
 
     useEffect(() => {
         
         const ytext = yjsManager.ydoc.getText(`counter-${counter}`);
-        // const yOutput = yjsManager.ydoc.getText(`outputter-${counter}`);
         const yOutput = yjsManager.ydoc.getText(`output-${counter}`);
-        // yy.insert(0, 'hello this si yy')
+        const yCellId = yjsManager.ydoc.getText(`cellid-${counter}`);
+
         const undoManager = new UndoManager(ytext);
         setValue(ytext.toString());
         setYjsExtension(yCollab(ytext, yjsManager.provider.awareness, { undoManager }));
-        setyOutputState(yOutput);
+
+        yCellIdRef.current = yCellId;
         yOutputManager.current = yOutput;
         console.log('youtput', yOutput.toString());
+
         if(yOutput.toString() != ""){
           setEnableOutput(true);
           setOutput(yOutput.toString());
         }
-        // yOutputManager.current.insert(0, 'hel')
 
+        if(yCellIdRef.current != ""){
+          setCellId(yCellId.toString());
+        }
 
         yOutput.observe(event => {
           if(yOutput.length != 0){
@@ -51,6 +65,11 @@ const YjsCodeMirror = ({yjsManager, setFocusedEditor, counter, kernelManagerRef}
             setEnableOutput(false)
           }
         });
+
+        yCellId.observe(event => {
+            console.log('yCellId changed', yCellId.toString());
+            setCellId(yCellId.toString());
+        })
 
     }, [yjsManager.ydoc, yjsManager.provider, counter]);
 
@@ -93,6 +112,7 @@ const YjsCodeMirror = ({yjsManager, setFocusedEditor, counter, kernelManagerRef}
     // this.kernelManager.request
     yOutputManager.current.delete(0, yOutputManager.current.length);
     yOutputManager.current.insert(0, 'Running...')
+    yCellIdRef.current.delete(0, yCellIdRef.current.length);
 
     future.onIOPub = (msg) => {
       console.log(msg);
@@ -100,27 +120,35 @@ const YjsCodeMirror = ({yjsManager, setFocusedEditor, counter, kernelManagerRef}
       if (msg.header.msg_type === "execute_input") {
         let cellNo = msg.content.execution_count;
         console.log(cellNo);
+        yCellIdRef.current.insert(0, cellNo.toString());
         
       }
       if (msg.content.name === "stdout") {
         console.log('stdout', msg.content.text)
-        result = msg.content.text.replace(/(\r\n|\n|\r)/gm, "</br>")
-        // yOutputManager.current.insert(0, msg.content.text.replace(/(\r\n|\n|\r)/gm, "</br>"))
+        result =     "<div className=\"bg-white p-4 rounded shadow\"> <pre className=\"whitespace-pre-wrap text-black\">"+msg.content.text+"</pre></div>"
       }
     
       if (msg.content.data) {
         if ("text/html" in msg.content.data) {
-          result = msg.content.data["text/html"];
+          result =msg.content.data["text/html"].replace('class', 'className')
+          result = DOMPurify.sanitize(result);
           // yOutputManager.current.insert(0, text);
         }
         else if ("image/png" in msg.content.data) {
           result = msg.content.data["image/png"];
-          var image = '<img src="' + "data:image/png;base64," + result + '"/>';
+          result = '<img src="' + "data:image/png;base64," + result + '"/>';
         }
         else if ("text/plain" in msg.content.data) {
           result = "<pre>" + msg.content.data["text/plain"] + "</pre>";
           // yOutputManager.current.insert(0, text);
         }
+      }
+      if (msg.content.traceback) {
+        result = ""
+        for (const errLine in msg.content.traceback) {
+          result += convert.toHtml(msg.content.traceback[errLine]) + '</br>';
+        }
+        console.log('error' + result);
       }
 
       if (result !== ""){
@@ -140,27 +168,21 @@ const YjsCodeMirror = ({yjsManager, setFocusedEditor, counter, kernelManagerRef}
     future.done.then(() => {
         console.log("Future is fulfilled");
     })
-    // kernelManagerRef.runCode(value);
-    // yOutputState.delete(0, yOutputState.length);
-    // yOutputState.insert(0, 'Running...')
-    // setTimeout(() => {
-    //   yOutputState.delete(0, yOutputState.length);
-    //   yOutputState.insert(0, 'Hello World')
-    // }, 1000);
+
   };
 
   return (
     <>
     {yjsExtension && 
     <div className=' '>
-      <div className='p-2 flex gap-3 border-solid border-2 text-lg'>
+      <div className='p-2 flex gap-3 border-solid border-2 text-lg '>
         <div className='w-14'>
           <div className=' cursor-pointer' onClick={runCellCode}>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-7 h-7 text-green-600 shadow-sm hover:shadow-lg">
               <path fillRule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clipRule="evenodd" />
             </svg>
           </div>
-          <div >In [{counter}]</div>
+          <div >In [{cellId}]</div>
         </div>
 
         <CodeMirror 
@@ -184,12 +206,12 @@ const YjsCodeMirror = ({yjsManager, setFocusedEditor, counter, kernelManagerRef}
                 
         </div>
         </div>
-        {enableOutput && <div className='p-2 flex gap-3 border-solid border-x-2 border-b-2 text-lg '>
+        {enableOutput && <div className='p-2 flex gap-3 border-solid border-x-2 border-b-2 text-lg overflow-auto '>
 
           <div className='flex flex-row gap-1 w-18 '>
-            <div >Out [{counter}]</div>
+            <div >Out [{cellId}]</div>
           </div>
-          <div className='prose' ><div dangerouslySetInnerHTML={{__html: output}}/></div>
+          <div  ><div dangerouslySetInnerHTML={{__html: output}}/></div>
         </div>}
     </div>
     }

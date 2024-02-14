@@ -9,7 +9,7 @@ import { useToast } from "src/components/ui/use-toast"
 const EditorKernel = ({yjsManagerState, username, kernelManagerRef}) => {
     const { toast } = useToast()
     // const [kernelStatus, setKernelStatus] = useState('dead');
-    const { kernelDetails, kernelStatus, kernelStatusMap, startKernel, startServer, stopServer } = useSharedJupyterKernelManager();
+    const { kernelStatus, kernelStatusMap, startKernel, startServer, stopServer, interruptKernel } = useSharedJupyterKernelManager();
 
     // const [kernel, setKernel] = useState(null)
 
@@ -22,14 +22,7 @@ const EditorKernel = ({yjsManagerState, username, kernelManagerRef}) => {
                 event.changes.delta.forEach(change => {
                     if (change.insert){
                         console.log('change insert', change.insert);
-                        // kernelManagerRef.startKernel(change.insert, yjsManagerState).then((res) => {
-                        //     toast({
-                        //         title: "Kernel Status",
-                        //         description: "Kernel Started Successfully",
-                        //       })
-                        // }).catch((error) => {
-                        //     console.error("Error starting kernel", error);
-                        // });
+
                         startKernel(change.insert, yjsManagerState).then((res) => {
                             toast({
                                 title: "Kernel Status",
@@ -59,12 +52,7 @@ const EditorKernel = ({yjsManagerState, username, kernelManagerRef}) => {
             console.log("Kernel Details", kDetails);
             yjsManagerState.kernel.delete(0, yjsManagerState.kernel.length);
             yjsManagerState.kernel.insert(0, JSON.stringify(kDetails));
-    
-            // Notify the user of successful start
-            // toast({
-            //     title: "Kernel Status",
-            //     description: "Started Successfully",
-            // });
+
         } catch (error) {
             console.error(error);
     
@@ -76,6 +64,30 @@ const EditorKernel = ({yjsManagerState, username, kernelManagerRef}) => {
         }
     };
     
+
+    const interruptKernelServer = async () =>{
+        try {
+            toast({
+                title: "Kernel Status",
+                description: "Kernel Interrupt Initiated"
+            });
+
+            const res = await interruptKernel();
+            console.log(res);
+
+            toast({
+                title: "Kernel Status",
+                description: "Kernel Interrupted Successfully"
+            });
+
+        } catch (error) {
+            console.log(error);
+            toast({
+                title: "Kernel Status",
+                description: "Kernel Interrupt Failed"
+            })
+        }
+    }
 
     const stopKernel = async () => {
         try {
@@ -120,7 +132,7 @@ const EditorKernel = ({yjsManagerState, username, kernelManagerRef}) => {
             <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm6-2.438c0-.724.588-1.312 1.313-1.312h4.874c.725 0 1.313.588 1.313 1.313v4.874c0 .725-.588 1.313-1.313 1.313H9.564a1.312 1.312 0 01-1.313-1.313V9.564z" clipRule="evenodd" />
         </svg>                
     </button>
-    <button className=" bg-blue-400 rounded-md pl-4 pr-4 pt-2 pb-2">
+    <button onClick={interruptKernelServer} className=" bg-blue-400 rounded-md pl-4 pr-4 pt-2 pb-2">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
             <path fillRule="evenodd" d="M4.5 7.5a3 3 0 013-3h9a3 3 0 013 3v9a3 3 0 01-3 3h-9a3 3 0 01-3-3v-9z" clipRule="evenodd" />
         </svg>

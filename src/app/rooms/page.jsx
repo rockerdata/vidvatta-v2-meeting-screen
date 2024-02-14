@@ -7,6 +7,8 @@ import '@aws-amplify/ui-react/styles.css';
 import amplifyconfig from 'src/amplifyconfiguration.json';
 import { Amplify } from 'aws-amplify';
 import { getCurrentUser } from "aws-amplify/auth";
+import { KernelManagerProvider } from 'src/components/ide/kernelContext';
+
 
 Amplify.configure(amplifyconfig);
 
@@ -73,7 +75,7 @@ const Page = () => {
                             >
                                 <div className="relative">
                                     {/* Replace with dynamic image source if available */}
-                                    <img class="object-cover w-8 h-8 rounded-full" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=faceare&facepad=3&w=688&h=688&q=100" alt=""/>
+                                    <img className="object-cover w-8 h-8 rounded-full" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=faceare&facepad=3&w=688&h=688&q=100" alt=""/>
                                     {room.isOnline && <span className="h-2 w-2 rounded-full bg-emerald-500 absolute right-0.5 ring-1 ring-white bottom-0"></span>}
                                 </div>
                                 <div className="text-left rtl:text-right">
@@ -85,7 +87,9 @@ const Page = () => {
                     </div>
                 </div>
                 <div className="flex-1 h-screen w-5/6">
+                <KernelManagerProvider>
                     {selectedRoom && <Room key={selectedRoom} username={user.username} selectedRoom={selectedRoom}/>}
+                    </KernelManagerProvider>
                 </div>
             </aside>
 

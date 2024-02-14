@@ -66,6 +66,9 @@ class YjsManager {
 
     deleteEditorAtIndex(editorIndex) {
         this.cells.delete(this.cells.toArray().indexOf(editorIndex), 1);
+        this.ydoc.getText(`counter-${editorIndex}`).insert(0, "");
+        this.ydoc.getText(`output-${editorIndex}`).insert(0, "");
+        this.ydoc.getText(`cellid-${editorIndex}`).insert(0, "");
     }
 
     destroyProvider() {
