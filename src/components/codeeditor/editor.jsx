@@ -8,10 +8,11 @@ import snarkdown from 'snarkdown';
 import DOMPurify  from 'dompurify';
 import { useSharedJupyterKernelManager } from 'src/components/ide/kernelContext';
 import Convert from 'ansi-to-html';
-
+import { useToast } from "src/components/ui/use-toast"
 import './editor.css'
 
 const YjsCodeMirror = ({yjsManager, setFocusedEditor, counter, kernelManagerRef}) => {
+  const { toast } = useToast()
   const [value, setValue] = useState('');
   const [output, setOutput] = useState('');
   const [yjsExtension, setYjsExtension] = useState(null);  
@@ -26,9 +27,8 @@ const YjsCodeMirror = ({yjsManager, setFocusedEditor, counter, kernelManagerRef}
   });
 
 
-
   const [enableOutput, setEnableOutput] = useState(false);
-  const { kernelManager, runCode } = useSharedJupyterKernelManager();
+  const { kernelManager, runCode, kernelStatus } = useSharedJupyterKernelManager();
 
     useEffect(() => {
         
@@ -105,8 +105,20 @@ const YjsCodeMirror = ({yjsManager, setFocusedEditor, counter, kernelManagerRef}
   };
 
   const runCellCode = () => {
-    // console.log('runCode', value);
-    // runCode(value);
+    if (kernelStatus === 'dead'){
+      toast({
+        title: "Kernel Status",
+        description: "Kernel Not Available",
+      })
+      return
+    }
+    if (kernelStatus !== "idle"){
+      toast({
+        title: "Kernel Status",
+        description: "Kernel Is Busy",
+      })
+      return;
+    }
     let result = "";
     const future = kernelManager.requestExecute({code: value});
     // this.kernelManager.request

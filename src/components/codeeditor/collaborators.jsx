@@ -1,14 +1,39 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useOthers } from '../../../liveblocks.config';
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+  } from "src/components/ui/popover"
 
-const Collaborators = ({ providerState, username }) => {
+
+const Collaborators = ({ providerState, username, toast }) => {
     const [collaborators, setCollaborators] = useState([]);
+    const collaboratorsCount = useRef(0);
     const others = useOthers();
 
     useEffect(() => {
         console.log('others:');
         console.log(others);
     }, [others]);
+
+
+    useEffect(() => {
+        console.log(collaboratorsCount.current, collaborators.length);
+        if(collaborators.length > collaboratorsCount.current){
+            toast({
+                title: "Collaborators Status",
+                description: "New Collaborator Has Joined",
+            });            
+        }
+        if(collaborators.length < collaboratorsCount.current){
+            toast({
+                title: "Collaborators Status",
+                description: "Collaborator Has Left",
+            });            
+        }        
+        collaboratorsCount.current = collaborators.length;
+    }, [collaborators])
 
     useEffect(() => {
         if (providerState.awareness) {
@@ -30,15 +55,20 @@ const Collaborators = ({ providerState, username }) => {
 
     return (
         <>
-        <ul className="list-disc list-inside bg-white p-1">
-        {
-            collaborators.map((collaborator, index) => (
-                <li className="mb-2" key={index}>
-                    {'user' in collaborator && collaborator.user.name ? collaborator.user.name : username}
-                </li>
-            ))
-        }
-        </ul>
+        <Popover>
+            <PopoverTrigger>
+                <button className=" bg-orange-300 rounded-md pl-4 pr-4 pt-2 pb-2 hover:bg-orange-400">
+                <div className="w-6 h-6 font-medium">{collaborators.length}</div>
+                </button>
+            </PopoverTrigger>
+            <PopoverContent>{
+                        collaborators.map((collaborator, index) => (
+                            <div className="mb-2" key={index}>
+                                {'user' in collaborator && collaborator.user.name ? collaborator.user.name : username}
+                            </div>
+                        ))
+            }</PopoverContent>
+        </Popover>
         </>
     );
 };

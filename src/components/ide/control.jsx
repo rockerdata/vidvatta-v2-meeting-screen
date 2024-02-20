@@ -5,6 +5,13 @@ import KernelManager from 'src/utils/kernel/manager'
 import { useJupyterKernelManager } from 'src/utils/kernel/managerHook';
 import { useSharedJupyterKernelManager } from './kernelContext';
 import { useToast } from "src/components/ui/use-toast"
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+  } from "src/components/ui/tooltip"
+
 
 const EditorKernel = ({yjsManagerState, username, kernelManagerRef}) => {
     const { toast } = useToast()
@@ -66,6 +73,13 @@ const EditorKernel = ({yjsManagerState, username, kernelManagerRef}) => {
     
 
     const interruptKernelServer = async () =>{
+        if (kernelStatus === 'dead'){
+            toast({
+                title: "Kernel Status",
+                description: "Kernel Not Available",
+            });
+            return;
+        }
         try {
             toast({
                 title: "Kernel Status",
@@ -90,6 +104,13 @@ const EditorKernel = ({yjsManagerState, username, kernelManagerRef}) => {
     }
 
     const stopKernel = async () => {
+        if (kernelStatus === 'dead'){
+            toast({
+                title: "Kernel Status",
+                description: "Kernel Not Available",
+            });
+            return;
+        }
         try {
             toast({
                 title: "Kernel Status",
@@ -122,37 +143,78 @@ const EditorKernel = ({yjsManagerState, username, kernelManagerRef}) => {
     
   return (
     <div className='flex gap-4 m-5'>
-    <button onClick={startKernelServer} className=" bg-blue-400 rounded-md pl-4 pr-4 pt-2 pb-2">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
-            <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm14.024-.983a1.125 1.125 0 010 1.966l-5.603 3.113A1.125 1.125 0 019 15.113V8.887c0-.857.921-1.4 1.671-.983l5.603 3.113z" clipRule="evenodd" />
-        </svg>
-    </button>
-    <button onClick={stopKernel} className=" bg-blue-400 rounded-md pl-4 pr-4 pt-2 pb-2">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
-            <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm6-2.438c0-.724.588-1.312 1.313-1.312h4.874c.725 0 1.313.588 1.313 1.313v4.874c0 .725-.588 1.313-1.313 1.313H9.564a1.312 1.312 0 01-1.313-1.313V9.564z" clipRule="evenodd" />
-        </svg>                
-    </button>
-    <button onClick={interruptKernelServer} className=" bg-blue-400 rounded-md pl-4 pr-4 pt-2 pb-2">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
-            <path fillRule="evenodd" d="M4.5 7.5a3 3 0 013-3h9a3 3 0 013 3v9a3 3 0 01-3 3h-9a3 3 0 01-3-3v-9z" clipRule="evenodd" />
-        </svg>
-    </button>
-    <div className='flex justify-center items-center'>
-        <div className="group relative">
-            <div className={` items-center ${kernelStatusMap[kernelStatus]} w-7 h-7 rounded-full`}></div>
 
-            <div className="absolute bottom-full mb-2 hidden group-hover:block">
-            <div className="bg-gray-700 text-white text-xs rounded p-2">
-                {kernelStatus}
-            </div>
-            <div className="w-3 h-3 bg-gray-700 absolute left-1/2 transform -translate-x-1/2 rotate-45 bottom-[-8px]"></div>
-            </div>
-        </div>
-    </div>
-    <div className=' w-3/12 border-solid border-2'>
-        {yjsManagerState && <Collaborators providerState={yjsManagerState.provider} username={username}/>}
-    </div>
+    <TooltipProvider>
+    <Tooltip>
+        <TooltipTrigger>
+        <button onClick={startKernelServer} className=" bg-blue-300 rounded-md pl-4 pr-4 pt-2 pb-2 hover:bg-blue-400">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+                <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm14.024-.983a1.125 1.125 0 010 1.966l-5.603 3.113A1.125 1.125 0 019 15.113V8.887c0-.857.921-1.4 1.671-.983l5.603 3.113z" clipRule="evenodd" />
+            </svg>
+        </button>
+        </TooltipTrigger>
+        <TooltipContent>
+        <p>Start Kernel</p>
+        </TooltipContent>
+    </Tooltip>
+    </TooltipProvider>
 
+    <TooltipProvider>
+    <Tooltip>
+        <TooltipTrigger>
+        <button onClick={stopKernel} className=" bg-blue-300 rounded-md pl-4 pr-4 pt-2 pb-2 hover:bg-blue-400">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+                <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm6-2.438c0-.724.588-1.312 1.313-1.312h4.874c.725 0 1.313.588 1.313 1.313v4.874c0 .725-.588 1.313-1.313 1.313H9.564a1.312 1.312 0 01-1.313-1.313V9.564z" clipRule="evenodd" />
+            </svg>                
+        </button>
+        </TooltipTrigger>
+        <TooltipContent>
+        <p>Stop Kernel</p>
+        </TooltipContent>
+    </Tooltip>
+    </TooltipProvider>
+
+
+    <TooltipProvider>
+    <Tooltip>
+        <TooltipTrigger>
+        <button onClick={interruptKernelServer} className=" bg-blue-300 rounded-md pl-4 pr-4 pt-2 pb-2 hover:bg-blue-400">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+                <path fillRule="evenodd" d="M4.5 7.5a3 3 0 013-3h9a3 3 0 013 3v9a3 3 0 01-3 3h-9a3 3 0 01-3-3v-9z" clipRule="evenodd" />
+            </svg>
+        </button>
+        </TooltipTrigger>
+        <TooltipContent>
+        <p>Interrupt Kernel</p>
+        </TooltipContent>
+    </Tooltip>
+    </TooltipProvider>
+
+
+    <TooltipProvider>
+    <Tooltip>
+        <TooltipTrigger>
+    <div >
+        {yjsManagerState && <Collaborators providerState={yjsManagerState.provider} username={username} toast={toast}/>}
+    </div>
+        </TooltipTrigger>
+        <TooltipContent>
+        <p>Collaborators</p>
+        </TooltipContent>
+    </Tooltip>
+    </TooltipProvider>
+
+    <TooltipProvider>
+    <Tooltip>
+        <TooltipTrigger>
+        <div className={` items-center ${kernelStatusMap[kernelStatus]} w-7 h-7 rounded-full`}></div>
+        </TooltipTrigger>
+        <TooltipContent>
+        <p>{kernelStatus}</p>
+        </TooltipContent>
+    </Tooltip>
+    </TooltipProvider>
+ 
 </div>
   )
 }
