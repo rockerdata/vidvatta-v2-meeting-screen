@@ -39,14 +39,14 @@ function App({username}) {
         meetingId,
         micEnabled: true,
         webcamEnabled: true,
-        name: "Host User",
+        name: username,
         participantId: participantId
       }}
       token={authToken}
     >
       <MeetingConsumer>
         {() => (
-          <MeetingView isHost={true} meetingId={meetingId} onMeetingLeave={onMeetingLeave} />
+          <MeetingView isHost={true} meetingId={meetingId} username={username} onMeetingLeave={onMeetingLeave} />
         )}
       </MeetingConsumer>
     </MeetingProvider>

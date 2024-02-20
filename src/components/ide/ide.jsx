@@ -13,7 +13,7 @@ import { useJupyterKernelManager } from 'src/utils/kernel/managerHook';
 
 const initialEditors = [];
 
-const Ide = ({username}) => {
+const Ide = ({username,toggle}) => {
     const room = useRoom();
     console.log('room:', room  );
 
@@ -77,6 +77,7 @@ const Ide = ({username}) => {
                                     yjsManager={yjsManagerRef.current}
                                     counter={item}
                                     kernelManagerRef={kernelManagerRef.current}
+                                    toggle={toggle}
                                   />
                                 ),
                               },
@@ -110,7 +111,7 @@ const Ide = ({username}) => {
 
     return (
         <div>
-        {yjsManagerRef.current && <EditorControl yjsManagerState={yjsManagerRef.current} username={username} kernelManagerRef={kernelManagerRef.current}/>}
+        {(yjsManagerRef.current && !toggle) && <EditorControl yjsManagerState={yjsManagerRef.current} username={username} kernelManagerRef={kernelManagerRef.current}/>}
 
         <div className='flex gap-3 ml-2 mr-2'>
             <div className=' w-11/12'>

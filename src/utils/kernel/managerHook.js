@@ -28,6 +28,7 @@ export const useJupyterKernelManager = () => {
 
   const startKernel = useCallback(async (res, yjsManagerState) => {
     try {
+      //TODO: starting is not being set
       setKernelStatus('starting');
       const details = JSON.parse(res);
       setKernelDetails(details);
@@ -75,7 +76,7 @@ export const useJupyterKernelManager = () => {
     const startServer = useCallback(async () => {
         try {
           console.log("Start Server is called");
-          const response = await fetch('http://localhost:3000/api/jupyter/start-server');
+          const response = await fetch('api/jupyter/start-server');
           const details = await response.json();
           setKernelDetails(details);
           console.log(details);
@@ -128,7 +129,7 @@ export const useJupyterKernelManager = () => {
             await kernelManager.shutdown();
             console.log("Kernel shutdown successfully.");
       
-            const response = await fetch('http://localhost:3000/api/jupyter/stop-server', {
+            const response = await fetch('api/jupyter/stop-server', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ taskArn: kernelDetails.taskArn }),

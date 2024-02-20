@@ -56,6 +56,7 @@ function ParticipantView(props) {
         console.log("WebCam Status", webcamOn)
         if(props.isHost === true ){
             if(webcamOn === true){
+                console.log("Webcam Disabled");
                 disableWebcam();
             }
             else{
@@ -126,10 +127,13 @@ function ParticipantView(props) {
               console.log(err, "participant video error");
             }}
           />
-          
         )
         :
-          <div className="h-[90px] w-[160px]" style={{ backgroundColor: randomColor }}></div>
+          <div className="h-[90px] w-[160px] flex flex-row items-center justify-center" style={{ backgroundColor: randomColor }}>
+            <div className="align-middle font-bold text-2xl text-white">
+              {displayName.substring(0, 2)}
+            </div>
+          </div>
         }
         <div className="w-[160px] p-2 rounded-sm flex flex-row gap-2 bg-blue-400 items-center justify-center">
           <div className="cursor-pointer" onClick={handleWebcam}> {webcamOn ? <WebcamOnIcon fillcolor="black"/> : <WebcamOffIcon fillcolor="black"/>}</div>

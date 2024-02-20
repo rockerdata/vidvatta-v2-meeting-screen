@@ -33,7 +33,7 @@ export async function createRoom(username, sessionName) {
   return res.json()
 }
 
-export default function Room({username, roomName, selectedRoom}){
+export default function Room({username, roomName, selectedRoom, toggle}){
 
     useEffect(() => {
       if(username && roomName){
@@ -52,7 +52,7 @@ export default function Room({username, roomName, selectedRoom}){
       }}
       >
       <ClientSideSuspense fallback={<div>Loading…</div>}>
-        {() => <Ide username={username}/>}
+        {() => <Ide username={username} toggle={toggle}/>}
       </ClientSideSuspense>
     </RoomProvider>
     </>

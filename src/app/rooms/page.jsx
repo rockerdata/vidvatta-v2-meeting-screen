@@ -52,22 +52,20 @@ const Page = () => {
     useEffect(() => {
         console.log('selectedRoom:', selectedRoom);
     }, [selectedRoom]);
+
+    const resetSelectedRoom = async () => {
+        setSelectedRoom(null);
+    }
+
    
     return (
-        // <div>
-        //     {rooms && rooms.map((room) => (
-        //         <div key={room.id} onClick={() => setSelectedRoom(room.id)}>
-        //             <h3>{room.id}</h3>
-        //         </div>
-        //     ))}
-        //     {selectedRoom && <Room key={selectedRoom} username={user.username} roomName={selectedRoom}/>}
-        // </div>
         <>
             <aside className="flex">
                 <div className="h-screen py-8 overflow-y-auto bg-white border-l border-r w-1/6 dark:bg-gray-900 dark:border-gray-700">
                     <h2 className="px-5 text-lg font-medium text-gray-800 dark:text-white">Accounts</h2>
                     <div className="mt-8 space-y-4">
                         {rooms && rooms.map((room) => (
+                            <div className="flex flex-row">
                             <button 
                                 key={room.id} 
                                 onClick={() => setSelectedRoom(room.id)}
@@ -83,6 +81,15 @@ const Page = () => {
                                     <p className="text-xs text-gray-500 dark:text-gray-400">{room.followers} Followers</p>
                                 </div>
                             </button>
+                            
+                            {(selectedRoom === room.id) && 
+                            <button onClick={resetSelectedRoom}>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 hover:bg-gray-200">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                            </button>
+                            }
+                            </div>
                         ))}
                     </div>
                 </div>

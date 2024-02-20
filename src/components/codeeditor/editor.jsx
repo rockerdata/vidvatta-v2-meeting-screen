@@ -11,7 +11,7 @@ import Convert from 'ansi-to-html';
 import { useToast } from "src/components/ui/use-toast"
 import './editor.css'
 
-const YjsCodeMirror = ({yjsManager, setFocusedEditor, counter, kernelManagerRef}) => {
+const YjsCodeMirror = ({yjsManager, setFocusedEditor, counter, kernelManagerRef, toggle}) => {
   const { toast } = useToast()
   const [value, setValue] = useState('');
   const [output, setOutput] = useState('');
@@ -137,7 +137,8 @@ const YjsCodeMirror = ({yjsManager, setFocusedEditor, counter, kernelManagerRef}
       }
       if (msg.content.name === "stdout") {
         console.log('stdout', msg.content.text)
-        result =     "<div className=\"bg-white p-4 rounded shadow\"> <pre className=\"whitespace-pre-wrap text-black\">"+msg.content.text+"</pre></div>"
+        //TODO: handle \t based prints
+        result =   result +   "<div className=\"bg-white p-4 rounded shadow\"> <pre className=\"whitespace-pre-wrap text-black\">"+msg.content.text+"</pre></div>"
       }
     
       if (msg.content.data) {
@@ -204,6 +205,7 @@ const YjsCodeMirror = ({yjsManager, setFocusedEditor, counter, kernelManagerRef}
           height="auto"
           extensions={[python(), yjsExtension]}
           onChange={onChange}
+          readOnly={toggle}
         />
 
         <div className=' cursor-pointer' onClick={addBelowCell}>

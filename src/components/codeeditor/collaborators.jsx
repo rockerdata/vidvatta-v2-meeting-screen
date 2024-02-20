@@ -55,20 +55,20 @@ const Collaborators = ({ providerState, username, toast }) => {
 
     return (
         <>
-        <Popover>
-            <PopoverTrigger>
-                <button className=" bg-orange-300 rounded-md pl-4 pr-4 pt-2 pb-2 hover:bg-orange-400">
-                <div className="w-6 h-6 font-medium">{collaborators.length}</div>
-                </button>
-            </PopoverTrigger>
-            <PopoverContent>{
-                        collaborators.map((collaborator, index) => (
-                            <div className="mb-2" key={index}>
-                                {'user' in collaborator && collaborator.user.name ? collaborator.user.name : username}
-                            </div>
-                        ))
-            }</PopoverContent>
-        </Popover>
+    {collaborators.length> 0 && <Popover>
+        <PopoverTrigger>
+            <button className=" bg-orange-300 rounded-md pl-4 pr-4 pt-2 pb-2 hover:bg-orange-400">
+            <div className="w-6 h-6 font-medium">{collaborators.length}</div>
+            </button>
+        </PopoverTrigger>
+        <PopoverContent>{
+                    collaborators.map((collaborator, index) => (
+                        <div className="mb-2" key={index}>
+                            {'user' in collaborator && collaborator.user.name ? collaborator.user.name : username}
+                        </div>
+                    ))
+        }</PopoverContent>
+    </Popover>}
         </>
     );
 };

@@ -142,7 +142,7 @@ const EditorKernel = ({yjsManagerState, username, kernelManagerRef}) => {
     };
     
   return (
-    <div className='flex gap-4 m-5'>
+    <div className='flex flex-row gap-3 shadow-lg rounded-md p-3 justify-center' >
 
     <TooltipProvider>
     <Tooltip>

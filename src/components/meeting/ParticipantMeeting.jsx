@@ -9,12 +9,13 @@ import JoinScreen from "./JoinScreen";
 import { Button } from "../ui/button";
 
 
-function Meeting() {
+function Meeting({username}) {
   const [meetingId, setMeetingId] = useState("yy6i-uima-4vyv");
   const [participantId, setParticipantId] = useState("id-123");
 
-    useEffect(() => {
 
+    useEffect(() => {
+      setParticipantId(username);
     }, []);
 
   const getMeetingAndToken = async (id) => {
@@ -43,14 +44,14 @@ function Meeting() {
         meetingId,
         micEnabled: true,
         webcamEnabled: true,
-        name: "C.V. Raman",
+        name: username, //"C.V. Raman",
         participantId: participantId
       }}
       token={authToken}
     >
       <MeetingConsumer>
         {() => (
-          <MeetingView meetingId={meetingId} onMeetingLeave={onMeetingLeave} />
+          <MeetingView meetingId={meetingId} username={username} onMeetingLeave={onMeetingLeave} />
         )}
       </MeetingConsumer>
     </MeetingProvider>

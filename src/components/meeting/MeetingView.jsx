@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     useMeeting,
     usePubSub
@@ -8,7 +8,8 @@ import ParticipantView from "./ParticipantView";
 import Controls from "./Controls";
 import Chat from './Chat'
 import { Button } from "../ui/button";
-
+import { KernelManagerProvider } from 'src/components/ide/kernelContext';
+import Room  from 'src/components/collaboration/Room'
 
 function ConfirmModal({ toggleMessage, onAccept, onReject, isOpen, participantId }) {
  
@@ -31,9 +32,19 @@ function MeetingView(props) {
     const [requestParticipantId, setRequestParticipantId] = useState(null);
     const [acceptReject, setAcceptReject] = useState({});
     const [toggleMessage, setToggleMessage] = useState("");
+    const [toggleToCode, setToggleToCode] = useState(false);
   
 
-    const { join } = useMeeting();
+    const { join, leave } = useMeeting();
+
+    useEffect(() =>{
+      return leave();
+    }, [])
+
+    useEffect(() => {
+        console.log("toggleToCode", toggleToCode);
+    }, [toggleToCode])
+
     const { participants, presenterId  } = useMeeting({
         onMeetingJoined: () => {
             setJoined("JOINED");
@@ -42,7 +53,7 @@ function MeetingView(props) {
             props.onMeetingLeave();
         },
         onWebcamRequested: ({ participantId, accept, reject }) => {
-
+            console.log("On Webcam Requested called");
             setIsModalOpen(true);
             setRequestParticipantId(participantId);
     
@@ -53,6 +64,7 @@ function MeetingView(props) {
             console.log("Webcam Toggle Requested", participantId);
         },
         onMicRequested: ({ participantId, accept, reject }) => {
+          console.log("On Mic Requested called");
             setIsModalOpen(true);
             setRequestParticipantId(participantId);
     
@@ -84,10 +96,7 @@ function MeetingView(props) {
     return (
       <div>
         {/* <h3 >Meeting Id: {props.meetingId}</h3> */}
-        {joined && joined == "JOINED" ? (
-          <div className="flex flex-col">
-            <div className="w-full flex justify-center items-center"><Controls  isHost={props.isHost}/></div>
-            <ConfirmModal
+        <ConfirmModal
                 toggleMessage={toggleMessage}
                 isOpen={isModalOpen}
                 onAccept={handleAccept}
@@ -95,8 +104,28 @@ function MeetingView(props) {
                 participantId={requestParticipantId}
             />
 
+        {joined && joined == "JOINED" ? (
+          <div className="flex flex-col">
+            <div className="w-full flex justify-center items-center"><Controls toggleCode={setToggleToCode} isHost={props.isHost}/></div>
+
+
             <div className="mt-3 w-full flex justify-center items-center">
-            {presenterId && <PresenterView presenterId={presenterId} />}
+            
+            
+            {//this is coming from controls panel, we will use this to show code panel.
+            !toggleToCode?
+            (presenterId ? 
+            <PresenterView presenterId={presenterId}/> :
+            <div className=" bg-gray-100 text-black w-full h-[400px] mt-1 mr-5 ml-5 mb-2 flex flex-row items-center justify-center">
+              <div  className="align-middle font-bold text-2xl text-black">No Screenshare Available Yet</div>
+            </div>
+            ):
+            (<div className="w-full">                
+              <KernelManagerProvider>
+              <Room key={'rushi245-session1'} username={props.username} selectedRoom={'rushi245-session1'} toggle={true}/>
+              </KernelManagerProvider></div>)
+            }
+
             </div>
             <div className="mt-3 w-full flex flex-rows gap-2 overflow-auto overflow-x-scroll">
             {[...participants.keys()].map((participantId) => (
