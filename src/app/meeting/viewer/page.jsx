@@ -7,7 +7,7 @@ import amplifyconfig from 'src/amplifyconfiguration.json';
 Amplify.configure(amplifyconfig);
 
 
-const page = () => {
+const page = ({user}) => {
     const MeetingAppContainer = dynamic(
       () => import("src/components/meeting/ParticipantMeeting"),
       {
@@ -15,7 +15,7 @@ const page = () => {
       }
     );
   
-    return <MeetingAppContainer />;
+    return <MeetingAppContainer username={user.username}/>;
   };
 
 export default React.memo(withAuthenticator(page));

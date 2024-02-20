@@ -149,7 +149,6 @@ const EditorKernel = ({yjsManagerState, username, kernelManagerRef}) => {
             </div>
         </div>
     </div>
-    <div className='text-center'>Collaborators</div>
     <div className=' w-3/12 border-solid border-2'>
         {yjsManagerState && <Collaborators providerState={yjsManagerState.provider} username={username}/>}
     </div>

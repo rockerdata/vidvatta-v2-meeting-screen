@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   MeetingProvider,
   MeetingConsumer,
@@ -8,12 +8,13 @@ import MeetingView from './MeetingView'
 import JoinScreen from "./JoinScreen";
 
 
-function App() {
+function App({username}) {
   const [meetingId, setMeetingId] = useState("yy6i-uima-4vyv");
   const [participantId, setParticipantId] = useState("id-124");
 
     useEffect(() => {
-
+      console.log("Username", username);
+      setParticipantId(username);
     }, []);
 
   const getMeetingAndToken = async (id) => {

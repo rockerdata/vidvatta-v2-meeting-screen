@@ -82,8 +82,8 @@ function MeetingView(props) {
       };
 
     return (
-      <div className="container">
-        <h3 >Meeting Id: {props.meetingId}</h3>
+      <div>
+        {/* <h3 >Meeting Id: {props.meetingId}</h3> */}
         {joined && joined == "JOINED" ? (
           <div className="flex flex-col">
             <div className="w-full flex justify-center items-center"><Controls  isHost={props.isHost}/></div>
@@ -110,9 +110,11 @@ function MeetingView(props) {
             {/* <Chat/> */}
           </div>
         ) : joined && joined == "JOINING" ? (
-          <p>Joining the meeting...</p>
+          <p className="flex justify-center items-center h-full">Joining the meeting...</p>
         ) : (
-          <Button onClick={joinMeeting}>Join</Button>
+          <div className="flex justify-center items-center h-full">
+          <Button  className="bg-blue-400 text-white font-bold mt-48 py-2 px-4 rounded-md shadow-md" onClick={joinMeeting}>Start the Meeting</Button>
+          </div>
         )}
       </div>
     );

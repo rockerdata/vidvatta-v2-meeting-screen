@@ -14,6 +14,22 @@ import { Button } from "../ui/button";
 
 function ParticipantView(props) {
     const micRef = useRef(null);
+    const [randomColor, setRandomColor] = useState('#ffffff'); // Initial color
+
+
+  const generateRandomColor = () => {
+    const getRandomChannel = () => Math.floor(Math.random() * 156) + 100; // Generating a channel value between 100 and 255
+    const red = getRandomChannel();
+    const green = getRandomChannel();
+    const blue = getRandomChannel();
+    const color = `rgb(${red}, ${green}, ${blue})`;
+    setRandomColor(color);
+  };
+
+    useEffect(() =>{
+      generateRandomColor();
+      console.log("Random color", randomColor);
+    }, [])
 
     //Callback for when the participant starts a stream
     function onStreamEnabled(stream) {
@@ -95,7 +111,7 @@ function ParticipantView(props) {
         <div className="w-[160px] flex bg-blue-400 items-center justify-center">
           {displayName}
         </div>        
-        {webcamOn && (
+        {webcamOn ? (
           <ReactPlayer
             playsinline // very very imp prop
             pip={false}
@@ -110,7 +126,11 @@ function ParticipantView(props) {
               console.log(err, "participant video error");
             }}
           />
-        )}
+          
+        )
+        :
+          <div className="h-[90px] w-[160px]" style={{ backgroundColor: randomColor }}></div>
+        }
         <div className="w-[160px] p-2 rounded-sm flex flex-row gap-2 bg-blue-400 items-center justify-center">
           <div className="cursor-pointer" onClick={handleWebcam}> {webcamOn ? <WebcamOnIcon fillcolor="black"/> : <WebcamOffIcon fillcolor="black"/>}</div>
           <div className="cursor-pointer" onClick={handleMic}>  {micOn ? <MicOnIcon fillcolor="black"/> : <MicOffIcon fillcolor="black"/>}</div> 

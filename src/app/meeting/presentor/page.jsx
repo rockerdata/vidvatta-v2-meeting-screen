@@ -7,7 +7,7 @@ import amplifyconfig from 'src/amplifyconfiguration.json';
 Amplify.configure(amplifyconfig);
 
 
-const page = () => {
+const page = ({user}) => {
     const MeetingAppContainer = dynamic(
       () => import("../../../components/meeting/HostMeeting"),
       {
@@ -17,7 +17,7 @@ const page = () => {
   
     return (
     <>
-      <MeetingAppContainer />
+      <MeetingAppContainer username={user.username}/>
     </>);
   };
 

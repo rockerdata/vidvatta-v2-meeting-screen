@@ -14,7 +14,6 @@ const Collaborators = ({ providerState, username }) => {
         if (providerState.awareness) {
             
             setCollaborators(Array.from(providerState.awareness.getStates().values()));
-            console.log(collaborators);
             const updateCollaborators = () => {
                 console.log("update is called");
                 console.log(Array.from(providerState.awareness.getStates().values()));
