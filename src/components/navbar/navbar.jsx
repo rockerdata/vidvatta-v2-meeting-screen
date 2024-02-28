@@ -5,7 +5,7 @@ import { getCurrentUser } from 'aws-amplify/auth';
 import { Hub } from 'aws-amplify/utils';
 import { signOut } from 'aws-amplify/auth';
 
-const page = () => {
+const Navbar = () => {
 
   const [username, setUsername] = useState(null);
 
@@ -91,4 +91,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Navbar

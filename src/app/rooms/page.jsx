@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { withAuthenticator } from '@aws-amplify/ui-react';
+import { withAuthenticator, Authenticator } from '@aws-amplify/ui-react';
 import Room  from 'src/components/collaboration/Room'
 import '@aws-amplify/ui-react/styles.css';
 import amplifyconfig from 'src/amplifyconfiguration.json';
@@ -14,7 +14,7 @@ Amplify.configure(amplifyconfig);
 
 
 // app/routes/rooms.js
-export async function getData() {
+async function getData() {
     const res = await fetch('https://api.liveblocks.io/v2/rooms', {
       headers: {
         Authorization: `Bearer sk_dev_X385QGwAHQe1UroimFq-fR9Ug28L8O_RUCqOoQ7hspcf4t43JQuQ_Ho4auUKkjm2`
@@ -60,14 +60,15 @@ const Page = () => {
    
     return (
         <>
+        <Authenticator>{({user}) => (
             <aside className="flex">
                 <div className="h-screen py-8 overflow-y-auto bg-white border-l border-r w-1/6 dark:bg-gray-900 dark:border-gray-700">
                     <h2 className="px-5 text-lg font-medium text-gray-800 dark:text-white">Accounts</h2>
                     <div className="mt-8 space-y-4">
                         {rooms && rooms.map((room) => (
-                            <div className="flex flex-row">
+                            <div key={room.id}  className="flex flex-row">
                             <button 
-                                key={room.id} 
+                                
                                 onClick={() => setSelectedRoom(room.id)}
                                 className={`flex items-center w-full px-5 py-2 transition-colors duration-200 gap-x-2 focus:outline-none ${selectedRoom === room.id ? 'bg-gray-100 dark:bg-gray-800' : 'dark:hover:bg-gray-800 hover:bg-gray-100'}`}
                             >
@@ -99,7 +100,7 @@ const Page = () => {
                     </KernelManagerProvider>
                 </div>
             </aside>
-
+            )}</Authenticator>
         </>
     )
   }
