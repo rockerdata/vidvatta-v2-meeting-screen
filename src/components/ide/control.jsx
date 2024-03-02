@@ -11,6 +11,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
   } from "src/components/ui/tooltip"
+import {Button} from "src/components/ui/button"
 
 
 const EditorKernel = ({yjsManagerState, username, kernelManagerRef}) => {
@@ -37,6 +38,11 @@ const EditorKernel = ({yjsManagerState, username, kernelManagerRef}) => {
                               })
                         }).catch((error) => {
                             console.error("Error starting kernel", error);
+                            toast({
+                                title: "Kernel Status",
+                                description: "Kernel Start Failed - " + toString(error)
+                            });
+
                         })
                     }
                 });
@@ -66,7 +72,7 @@ const EditorKernel = ({yjsManagerState, username, kernelManagerRef}) => {
             // Handle errors and notify the user
             toast({
                 title: "Kernel Status",
-                description: "Error starting the kernel",
+                description: "Error starting the Server",
             });
         }
     };
@@ -147,11 +153,11 @@ const EditorKernel = ({yjsManagerState, username, kernelManagerRef}) => {
     <TooltipProvider>
     <Tooltip>
         <TooltipTrigger>
-        <button onClick={startKernelServer} className=" bg-blue-300 rounded-md pl-4 pr-4 pt-2 pb-2 hover:bg-blue-400">
+        <div onClick={startKernelServer} className=" bg-blue-300 rounded-md pl-4 pr-4 pt-2 pb-2 hover:bg-blue-400">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                 <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm14.024-.983a1.125 1.125 0 010 1.966l-5.603 3.113A1.125 1.125 0 019 15.113V8.887c0-.857.921-1.4 1.671-.983l5.603 3.113z" clipRule="evenodd" />
             </svg>
-        </button>
+        </div>
         </TooltipTrigger>
         <TooltipContent>
         <p>Start Kernel</p>
@@ -162,11 +168,11 @@ const EditorKernel = ({yjsManagerState, username, kernelManagerRef}) => {
     <TooltipProvider>
     <Tooltip>
         <TooltipTrigger>
-        <button onClick={stopKernel} className=" bg-blue-300 rounded-md pl-4 pr-4 pt-2 pb-2 hover:bg-blue-400">
+        <div onClick={stopKernel} className=" bg-blue-300 rounded-md pl-4 pr-4 pt-2 pb-2 hover:bg-blue-400">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                 <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm6-2.438c0-.724.588-1.312 1.313-1.312h4.874c.725 0 1.313.588 1.313 1.313v4.874c0 .725-.588 1.313-1.313 1.313H9.564a1.312 1.312 0 01-1.313-1.313V9.564z" clipRule="evenodd" />
             </svg>                
-        </button>
+        </div>
         </TooltipTrigger>
         <TooltipContent>
         <p>Stop Kernel</p>
@@ -178,11 +184,11 @@ const EditorKernel = ({yjsManagerState, username, kernelManagerRef}) => {
     <TooltipProvider>
     <Tooltip>
         <TooltipTrigger>
-        <button onClick={interruptKernelServer} className=" bg-blue-300 rounded-md pl-4 pr-4 pt-2 pb-2 hover:bg-blue-400">
+        <div onClick={interruptKernelServer} className=" bg-blue-300 rounded-md pl-4 pr-4 pt-2 pb-2 hover:bg-blue-400">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                 <path fillRule="evenodd" d="M4.5 7.5a3 3 0 013-3h9a3 3 0 013 3v9a3 3 0 01-3 3h-9a3 3 0 01-3-3v-9z" clipRule="evenodd" />
             </svg>
-        </button>
+        </div>
         </TooltipTrigger>
         <TooltipContent>
         <p>Interrupt Kernel</p>

@@ -35,11 +35,13 @@ export const useJupyterKernelManager = () => {
       setIpAddress(details.ipAddress);
       setPort(details.port);
   
-      const response = await axios.get(`http://${details.ipAddress}:${details.port}/api`, {timeout: 2000});
+      // const response = await axios.get(`http://${details.ipAddress}:${details.port}/api`, {timeout: 2000});
+      const response = await axios.get(`https://www.vidvatta.in/${details.ipAddress}/api`, {timeout: 2000});
       console.log("Kernel is up");
   
       const config = ServerConnection.makeSettings({
-        baseUrl: `http://${details.ipAddress}:${details.port}`,
+        // baseUrl: `http://${details.ipAddress}:${details.port}`,
+        baseUrl: `https://www.vidvatta.in/${details.ipAddress}`,
       });
       setServerConfig(config);
   
