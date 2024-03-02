@@ -2,6 +2,7 @@
 import React, { useState, useCallback } from 'react';
 import Ide from 'src/app/ide/page'
 import MeetingProvider from "src/app/meeting/viewer/page";
+import { Authenticator } from '@aws-amplify/ui-react';
 
 const LiveSession = () => {
   const [dividerPosition, setDividerPosition] = useState(50); // Initial position at 50%
@@ -24,6 +25,7 @@ const LiveSession = () => {
   }, [handleDrag]);
 
   return (
+    <Authenticator>{({user}) => (
     <div className="flex w-full h-screen">
       {/* Component 1 */}
       <div
@@ -47,6 +49,7 @@ const LiveSession = () => {
         <Ide/>
       </div>
     </div>
+    )}</Authenticator>
   );
 };
 

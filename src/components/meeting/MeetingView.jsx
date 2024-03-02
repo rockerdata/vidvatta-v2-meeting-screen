@@ -33,6 +33,7 @@ function MeetingView(props) {
     const [acceptReject, setAcceptReject] = useState({});
     const [toggleMessage, setToggleMessage] = useState("");
     const [toggleToCode, setToggleToCode] = useState(false);
+    const toggle_session = 'rushi245-session1'
   
 
     const { join, leave } = useMeeting();
@@ -50,7 +51,8 @@ function MeetingView(props) {
             setJoined("JOINED");
         },
         onMeetingLeft: () => {
-            props.onMeetingLeave();
+            // props.onMeetingLeave();
+            setJoined(null);
         },
         onWebcamRequested: ({ participantId, accept, reject }) => {
             console.log("On Webcam Requested called");
@@ -122,7 +124,7 @@ function MeetingView(props) {
             ):
             (<div className="w-full">                
               <KernelManagerProvider>
-              <Room key={'rushi245-session1'} username={props.username} selectedRoom={'rushi245-session1'} toggle={true}/>
+              <Room key={toggle_session} username={props.username} selectedRoom={toggle_session} toggle={true}/>
               </KernelManagerProvider></div>)
             }
 

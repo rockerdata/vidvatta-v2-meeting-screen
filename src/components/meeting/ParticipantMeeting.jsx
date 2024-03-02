@@ -6,28 +6,24 @@ import {
 import { authToken, getTempToken, createMeeting } from "./api";
 import MeetingView from './MeetingView'
 import JoinScreen from "./JoinScreen";
-import { Button } from "../ui/button";
 
 
-function Meeting({username}) {
+function Meeting({username, hostFlag}) {
   const [meetingId, setMeetingId] = useState("yy6i-uima-4vyv");
-  const [participantId, setParticipantId] = useState("id-123");
-
+  const [participantId, setParticipantId] = useState("id-124");
 
     useEffect(() => {
+      console.log("Username", username);
       setParticipantId(username);
     }, []);
 
   const getMeetingAndToken = async (id) => {
 
-    // const tokenResponse = await getTempToken({roomId: "test-meeting", participantId: participantId, isHost: false});
-    // console.log('token Response', tokenResponse);
+    const tokenResponse = await getTempToken({roomId: "test-meeting", participantId: participantId, isHost: hostFlag});
+    console.log('token Response', tokenResponse);
 
-    // const meetingId =
-    //   id == null ? await createMeeting({token: tokenResponse.token}) : id;
     const meetingId =
-    id == null ? await createMeeting() : id;
-
+    id == null ? await createMeeting({token: tokenResponse.token}) : id;
 
     // const meetingId = "yy6i-uima-4vyv";
     setMeetingId(meetingId);
@@ -37,27 +33,26 @@ function Meeting({username}) {
     setMeetingId(null);
   };
 
-  return meetingId ? (
-    <>
+  return authToken && meetingId ? (
     <MeetingProvider
       config={{
         meetingId,
         micEnabled: true,
         webcamEnabled: true,
-        name: username, //"C.V. Raman",
-        participantId: participantId
+        name: username,
+        participantId: username
       }}
       token={authToken}
     >
       <MeetingConsumer>
         {() => (
-          <MeetingView meetingId={meetingId} username={username} onMeetingLeave={onMeetingLeave} />
+          <MeetingView isHost={hostFlag} meetingId={meetingId} username={username} />
         )}
       </MeetingConsumer>
     </MeetingProvider>
-    </>
   ) : (
-    <JoinScreen getMeetingAndToken={getMeetingAndToken} />
+    // <JoinScreen getMeetingAndToken={getMeetingAndToken} />
+    <></>
   );
 }
 

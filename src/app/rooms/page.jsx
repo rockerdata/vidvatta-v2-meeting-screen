@@ -8,8 +8,6 @@ import amplifyconfig from 'src/amplifyconfiguration.json';
 import { Amplify } from 'aws-amplify';
 import { getCurrentUser } from "aws-amplify/auth";
 import { KernelManagerProvider } from 'src/components/ide/kernelContext';
-
-
 Amplify.configure(amplifyconfig);
 
 

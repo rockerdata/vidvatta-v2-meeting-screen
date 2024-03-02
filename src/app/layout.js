@@ -2,6 +2,10 @@ import './globals.css'
 import { Inter as FontSans } from 'next/font/google'
 import { cn } from "src/lib/utils"
 import Navbar from "src/components/navbar/navbar"
+import { Amplify } from 'aws-amplify';
+import amplifyconfig from 'src/amplifyconfiguration.json';
+import '@aws-amplify/ui-react/styles.css';
+Amplify.configure(amplifyconfig);
 
 const fontSans = FontSans({
   subsets: ["latin"],

@@ -1,9 +1,10 @@
 "use client"
 import React from 'react';
 import dynamic from "next/dynamic";
-import { Amplify } from 'aws-amplify';
-import { withAuthenticator, Authenticator } from '@aws-amplify/ui-react';
+import '@aws-amplify/ui-react/styles.css';
 import amplifyconfig from 'src/amplifyconfiguration.json';
+import { Amplify } from 'aws-amplify';
+import { Authenticator } from '@aws-amplify/ui-react';
 Amplify.configure(amplifyconfig);
 
 
@@ -18,7 +19,7 @@ const Page = () => {
     return (
       <>
       <Authenticator>{({user}) => (
-        <MeetingAppContainer username={user.username}/>
+        <MeetingAppContainer username={user.username} hostFlag={false}/>
       )}</Authenticator>
         
       </>);

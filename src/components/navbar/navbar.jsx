@@ -4,16 +4,21 @@ import { Button } from '../ui/button'
 import { getCurrentUser } from 'aws-amplify/auth';
 import { Hub } from 'aws-amplify/utils';
 import { signOut } from 'aws-amplify/auth';
+import { useRouter } from 'next/navigation'
+
 
 const Navbar = () => {
 
   const [username, setUsername] = useState(null);
+  const router = useRouter()
 
   useEffect(() => {
 
     getCurrentUser().then((user) => {
       console.log('user:', user);
       setUsername(user.username);
+    }).catch((e) =>{
+
     });
 
     Hub.listen('auth', ({ payload }) => {
@@ -79,7 +84,7 @@ const Navbar = () => {
             <div className=' align-middle'>{username}</div> <Button onClick={handleSignOut} className=' cursor-pointer'>Sign Out</Button> 
             </div> 
           : 
-          <Button >Sign up</Button>
+          <Button onClick={() => router.push('/dashboard')}>Sign up</Button>
 
           }  
         </li>

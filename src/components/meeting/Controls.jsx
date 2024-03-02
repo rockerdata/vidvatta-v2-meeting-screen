@@ -12,7 +12,11 @@ import ScreenShareIcon from "src/icons/ScreenShareIcon";
 import { Switch } from "src/components/ui/switch"
 
 function Controls({isHost, toggleCode}) {
-    const { leave, toggleMic, toggleWebcam, toggleScreenShare, localMicOn, localWebcamOn } = useMeeting();
+    const { leave, toggleMic, toggleWebcam, toggleScreenShare, localMicOn, localWebcamOn } = useMeeting({
+      onSpeakerChanged: (activeSpeakerId) => {
+        console.log("Active Speaker participantId", activeSpeakerId);
+      },
+    });
     const [switchStatus, setSwitchStatus] = useState(false);
 
     const switchStatusChanged = async (status) => {

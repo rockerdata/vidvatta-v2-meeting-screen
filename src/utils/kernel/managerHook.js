@@ -28,20 +28,19 @@ export const useJupyterKernelManager = () => {
 
   const startKernel = useCallback(async (res, yjsManagerState) => {
     try {
-      //TODO: starting is not being set
-      setKernelStatus('starting');
+    
       const details = JSON.parse(res);
       setKernelDetails(details);
       setIpAddress(details.ipAddress);
       setPort(details.port);
   
-      // const response = await axios.get(`http://${details.ipAddress}:${details.port}/api`, {timeout: 2000});
-      const response = await axios.get(`https://www.vidvatta.in/${details.ipAddress}/api`, {timeout: 2000});
+      const response = await axios.get(`http://${details.ipAddress}:${details.port}/api`, {timeout: 2000});
+      // const response = await axios.get(`https://www.vidvatta.in/${details.ipAddress}/api`, {timeout: 2000});
       console.log("Kernel is up");
   
       const config = ServerConnection.makeSettings({
-        // baseUrl: `http://${details.ipAddress}:${details.port}`,
-        baseUrl: `https://www.vidvatta.in/${details.ipAddress}`,
+        baseUrl: `http://${details.ipAddress}:${details.port}`,
+        // baseUrl: `https://www.vidvatta.in/${details.ipAddress}`,
       });
       setServerConfig(config);
   
@@ -77,7 +76,9 @@ export const useJupyterKernelManager = () => {
 
     const startServer = useCallback(async () => {
         try {
+
           console.log("Start Server is called");
+          setKernelStatus('starting');
           const response = await fetch('api/jupyter/start-server');
           const details = await response.json();
           setKernelDetails(details);

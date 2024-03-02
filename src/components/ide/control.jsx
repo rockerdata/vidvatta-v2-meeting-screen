@@ -30,20 +30,23 @@ const EditorKernel = ({yjsManagerState, username, kernelManagerRef}) => {
                 event.changes.delta.forEach(change => {
                     if (change.insert){
                         console.log('change insert', change.insert);
+                        if(change.insert.length != 0){
 
                         startKernel(change.insert, yjsManagerState).then((res) => {
                             toast({
                                 title: "Kernel Status",
                                 description: "Kernel Started Successfully",
                               })
+                            
                         }).catch((error) => {
                             console.error("Error starting kernel", error);
                             toast({
                                 title: "Kernel Status",
                                 description: "Kernel Start Failed - " + toString(error)
                             });
-
+                            yjsManagerState.kernel.delete(0, yjsManagerState.kernel.length);
                         })
+                    }
                     }
                 });
             })
@@ -216,7 +219,7 @@ const EditorKernel = ({yjsManagerState, username, kernelManagerRef}) => {
         <div className={` items-center ${kernelStatusMap[kernelStatus]} w-7 h-7 rounded-full`}></div>
         </TooltipTrigger>
         <TooltipContent>
-        <p>{kernelStatus}</p>
+        <p>Kernel Status - {kernelStatus}</p>
         </TooltipContent>
     </Tooltip>
     </TooltipProvider>
