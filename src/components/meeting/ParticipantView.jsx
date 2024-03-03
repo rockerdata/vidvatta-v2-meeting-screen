@@ -8,7 +8,7 @@ import MicOffIcon from "src/icons/MicOffIcon";
 import MicOnIcon from "src/icons/MicOnIcon";
 import WebcamOffIcon from "src/icons/WebcamOffIcon";
 import WebcamOnIcon from "src/icons/WebcamOnIcon";
-import ParticipantsIcon from "src/icons/ParticipantsIcon";
+
 import SpeakerIcon from "src/icons/SpeakerIcon";
 import { Button } from "../ui/button";
 
@@ -89,6 +89,7 @@ function ParticipantView(props) {
     useEffect(() => {
       if (micRef.current) {
         if (micOn && micStream) {
+          console.log("Mic on "+ props.participantId)
           const mediaStream = new MediaStream();
           mediaStream.addTrack(micStream.track);
   
@@ -138,7 +139,7 @@ function ParticipantView(props) {
         <div className="w-[160px] p-2 rounded-sm flex flex-row gap-2 bg-blue-400 items-center justify-center">
           <div className="cursor-pointer" onClick={handleWebcam}> {webcamOn ? <WebcamOnIcon fillcolor="black"/> : <WebcamOffIcon fillcolor="black"/>}</div>
           <div className="cursor-pointer" onClick={handleMic}>  {micOn ? <MicOnIcon fillcolor="black"/> : <MicOffIcon fillcolor="black"/>}</div> 
-          <ParticipantsIcon fillcolor="black"/>
+          {/* <ParticipantsIcon fillcolor="black"/> */}
         </div>
       </div>
     );

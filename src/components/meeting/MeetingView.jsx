@@ -10,18 +10,60 @@ import Chat from './Chat'
 import { Button } from "../ui/button";
 import { KernelManagerProvider } from 'src/components/ide/kernelContext';
 import Room  from 'src/components/collaboration/Room'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "src/components/ui/dialog"
+
 
 function ConfirmModal({ toggleMessage, onAccept, onReject, isOpen, participantId }) {
  
     return (
       <>
-      {isOpen && <div className="modal">
-        <div className="modal-content">
-          <p>{toggleMessage}</p>
-          <button onClick={onAccept}>Accept</button>
-          <button onClick={onReject}>Reject</button>
+      {isOpen && 
+        <>
+        <div
+          className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none"
+        >
+          <div className="relative w-auto my-6 mx-auto max-w-3xl">
+            {/*content*/}
+            <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+              {/*body*/}
+              <div className="relative p-6 flex-auto">
+                <p className="my-4 text-blueGray-500 text-lg leading-relaxed">
+                  Host is requesting permission to change
+                </p>
+              </div>
+              {/*footer*/}
+              <div className="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
+                <button
+                  className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                  type="button"
+                  onClick={onAccept}
+                >
+                  Allow
+                </button>
+                <button
+                  className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                  type="button"
+                  onClick={onReject}
+                >
+                  Reject
+                </button>
+
+              </div>
+            </div>
+          </div>
         </div>
-      </div>}
+        <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+      </>
+      }
+
+
       </>
     );
   }
@@ -33,6 +75,7 @@ function MeetingView(props) {
     const [acceptReject, setAcceptReject] = useState({});
     const [toggleMessage, setToggleMessage] = useState("");
     const [toggleToCode, setToggleToCode] = useState(false);
+    const [hideParticipants, setHideParticipants] = useState(false);
     const toggle_session = 'rushi245-session1'
   
 
@@ -83,6 +126,10 @@ function MeetingView(props) {
       join();
     };
   
+    const toggleParticipants = () => {
+      setHideParticipants(!hideParticipants);
+    }
+
     const handleAccept = () => {
         acceptReject.accept();
         setIsModalOpen(false);
@@ -108,9 +155,9 @@ function MeetingView(props) {
 
         {joined && joined == "JOINED" ? (
           <div className="flex flex-col">
-            <div className="w-full flex justify-center items-center"><Controls toggleCode={setToggleToCode} isHost={props.isHost}/></div>
-
-
+            
+            <div className="w-full flex justify-center items-center"><Controls participantLength={[...participants.keys()].length} toggleParticipants={toggleParticipants} toggleCode={setToggleToCode} isHost={props.isHost}/></div>
+            {presenterId && <div>Presentor : {presenterId}</div>}
             <div className="mt-3 w-full flex justify-center items-center">
             
             
@@ -130,7 +177,7 @@ function MeetingView(props) {
 
             </div>
             <div className="mt-3 w-full flex flex-rows gap-2 overflow-auto overflow-x-scroll">
-            {[...participants.keys()].map((participantId) => (
+            {hideParticipants && [...participants.keys()].map((participantId) => (
               <ParticipantView
                 isHost={props.isHost}
                 participantId={participantId}
