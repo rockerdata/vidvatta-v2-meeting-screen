@@ -46,6 +46,7 @@ function Meeting({username, hostFlag}) {
         participantId: username
       }}
       token={token}
+      joinWithoutUserInteraction
     >
       <MeetingConsumer>
         {() => (

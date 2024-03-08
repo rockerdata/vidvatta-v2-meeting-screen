@@ -9,6 +9,7 @@ import Controls from "./Controls";
 import Chat from './Chat'
 import { Button } from "../ui/button";
 import { KernelManagerProvider } from 'src/components/ide/kernelContext';
+import ChatPopup from 'src/components/chat/ChatPopup'
 import Room  from 'src/components/collaboration/Room'
 import {
   Dialog,
@@ -152,10 +153,10 @@ function MeetingView(props) {
                 onReject={handleReject}
                 participantId={requestParticipantId}
             />
-
+          
         {joined && joined == "JOINED" ? (
           <div className="flex flex-col">
-            
+            <ChatPopup meetingId={props.meetingId} username={props.username}/>  
             <div className="w-full flex justify-center items-center"><Controls participantLength={[...participants.keys()].length} toggleParticipants={toggleParticipants} toggleCode={setToggleToCode} isHost={props.isHost}/></div>
             {presenterId && <div>Presentor : {presenterId}</div>}
             <div className="mt-3 w-full flex justify-center items-center">

@@ -29,7 +29,7 @@
     "@radix-ui/react-tooltip": "^1.0.7",
     "@uiw/codemirror-theme-vscode": "^4.21.21",
     "@uiw/react-codemirror": "^4.21.21",
-    "@videosdk.live/react-sdk": "^0.1.74",
+    "@videosdk.live/react-sdk": "^0.1.84",
     "ansi-to-html": "^0.7.2",
     "aws-amplify": "^6.0.12",
     "axios": "^1.6.7",
