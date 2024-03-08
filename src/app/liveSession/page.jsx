@@ -2,6 +2,7 @@
 import React, { useState, useCallback } from 'react';
 import Ide from 'src/app/ide/page'
 import MeetingProvider from "src/app/meeting/viewer/page";
+import ChatPopup from 'src/components/chat/ChatPopup'
 import { Authenticator } from '@aws-amplify/ui-react';
 
 const LiveSession = () => {
@@ -26,6 +27,8 @@ const LiveSession = () => {
 
   return (
     <Authenticator>{({user}) => (
+      <div>
+      <ChatPopup/>
     <div className="flex w-full h-screen">
       {/* Component 1 */}
       <div
@@ -48,6 +51,7 @@ const LiveSession = () => {
       >
         <Ide/>
       </div>
+    </div>
     </div>
     )}</Authenticator>
   );
