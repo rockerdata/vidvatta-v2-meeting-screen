@@ -53,7 +53,7 @@ export default function Room({username, roomName, selectedRoom, toggle}){
       }}
       >
       <ClientSideSuspense fallback={<div>Loading…</div>}>
-        {() => <Ide username={username} toggle={toggle}/>}
+        {() => <Ide username={username} toggle={toggle} selectedRoom={selectedRoom}/>}
       </ClientSideSuspense>
     </RoomProvider>
     </>

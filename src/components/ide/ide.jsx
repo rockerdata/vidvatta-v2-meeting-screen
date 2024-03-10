@@ -2,8 +2,7 @@
 
 import Editor from 'src/components/codeeditor/editor'; 
 import React, { useEffect, useState, useReducer, useRef } from 'react';
-
-import Collaborators from 'src/components/codeeditor/collaborators';
+import { fetchAuthSession, AuthTokens } from 'aws-amplify/auth';
 import YjsManager from 'src/utils/yjs/manager';
 import {actionTypes, editorReducer} from 'src/components/codeeditor/editorReducer';
 import { useRoom } from "../../../liveblocks.config";
@@ -13,7 +12,7 @@ import { useJupyterKernelManager } from 'src/utils/kernel/managerHook';
 
 const initialEditors = [];
 
-const Ide = ({username,toggle}) => {
+const Ide = ({username,toggle, selectedRoom}) => {
     const room = useRoom();
     console.log('room:', room  );
 
@@ -25,12 +24,30 @@ const Ide = ({username,toggle}) => {
     const [yjsConnectionStatus, setYjsConnectionStatus] = useState(false);
     const kernelManagerRef = useRef(null);
     const yjsManagerRef = useRef(null);
-    const {kernelDetails, kernelStatus} = useJupyterKernelManager()
+    const {kernelDetails, kernelStatus} = useJupyterKernelManager(selectedRoom)
 
     const [editors, dispatch] = useReducer(
         editorReducer,
         initialEditors
       );
+
+      useEffect(() => {
+
+        async function getJwtToken() {
+          try {
+            const { accessToken, idToken, credentials  } = (await fetchAuthSession()).tokens ?? {};
+            return idToken.toString();
+          } catch (error) {
+            console.error('Error getting JWT token', error);
+            return null;
+          }
+        }
+    
+        getJwtToken().then((res) =>{
+          console.log("credent", res);
+        })
+    
+      })
 
     useEffect(() => {
         // const username = username;

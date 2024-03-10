@@ -1,6 +1,6 @@
 import React, {useEffect, useState}  from "react";
 import {
-  useMeeting, useParticipant
+  useMeeting, Constants
 } from "@videosdk.live/react-sdk";
 import { Button } from "src/components/ui/button"
 import EndIcon from "src/icons/EndIcon";
@@ -10,6 +10,7 @@ import WebcamOnIcon from "src/icons/WebcamOnIcon";
 import WebcamOffIcon from "src/icons/WebcamOffIcon";
 import ScreenShareIcon from "src/icons/ScreenShareIcon";
 import ParticipantsIcon from "src/icons/ParticipantsIcon";
+import RecordingIcon from 'src/icons/RecordingIcon'
 import PipIcon from "src/icons/PipIcon";
 import { Switch } from "src/components/ui/switch"
 import {
@@ -121,8 +122,29 @@ function Controls({isHost, toggleCode, toggleParticipants, participantLength}) {
   const [switchStatus, setSwitchStatus] = useState(false);
   const [activeSpeaker, setActiveSpeaker] = useState(false);
   const [toggleSettingDialog, setToggleSettingDialog] = useState(false);
+  const [recordingStatus, setRecordingstatus] = useState("black");
 
-    const { leave, toggleMic, toggleWebcam, toggleScreenShare, localMicOn, localWebcamOn } = useMeeting();
+
+  function onRecordingStateChanged(data) {
+    const { status } = data;
+  
+    if (status === Constants.recordingEvents.RECORDING_STARTING) {
+      console.log("Meeting recording is starting");
+    } else if (status === Constants.recordingEvents.RECORDING_STARTED) {
+      setRecordingstatus("red")
+    } else if (status === Constants.recordingEvents.RECORDING_STOPPING) {
+      console.log("Meeting recording is stopping");
+    } else if (status === Constants.recordingEvents.RECORDING_STOPPED) {
+      setRecordingstatus("black")
+    } else {
+      //
+    }
+  }
+
+
+    const { leave, toggleMic, toggleWebcam, toggleScreenShare, localMicOn, localWebcamOn, startRecording, stopRecording } = useMeeting({
+      onRecordingStateChanged,
+    });
     const {
       /** Methods */
     } = useMeeting({
@@ -145,6 +167,28 @@ function Controls({isHost, toggleCode, toggleParticipants, participantLength}) {
       toggleSettingDialogFunc();
     }
 
+    const handleRecording = () => {
+      // Start Recording
+      // If you don't have a `webhookUrl` or `awsDirPath`, you should pass null.
+      if (recordingStatus === 'black'){
+        console.log("Recording started");
+        startRecording(null, null, {
+          layout: {
+            type: "GRID",
+            priority: "SPEAKER",
+            gridSize: 4,
+          },
+          theme: "DARK",
+          mode: "video-and-audio",
+          quality: "high",
+          orientation: "landscape",
+        });
+    }
+    else if(recordingStatus === 'red'){
+      stopRecording();
+    }
+    };
+  
 
     return (
       <div className="flex flex-row flex-wrap gap-3 shadow-lg rounded-md p-3">
@@ -161,11 +205,11 @@ function Controls({isHost, toggleCode, toggleParticipants, participantLength}) {
         <Button className="bg-blue-300 hover:bg-blue-400" onClick={() => toggleParticipants()}><ParticipantsIcon  fillcolor="black"/>{participantLength}</Button>
         <Button className="bg-blue-300 hover:bg-blue-400" ><PipIcon  fillcolor="black"/></Button>
         {isHost && <Button className="bg-blue-300 hover:bg-blue-400" onClick={() => toggleScreenShare()}><ScreenShareIcon fillcolor="black"/></Button>}
+        {isHost && <Button className="bg-blue-300 hover:bg-blue-400" onClick={() => handleRecording()}><RecordingIcon fillcolor={recordingStatus}/></Button>}
         <Button className="bg-blue-300 hover:bg-blue-400" onClick={toggleSettingDialogFunc}>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
           <path strokeLinecap="round" fill="black" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
         </svg>
-
         </Button>
         <div className="flex items-center space-x-2">
         <Switch checked={switchStatus} onCheckedChange={switchStatusChanged}/>

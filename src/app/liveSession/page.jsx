@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Ide from 'src/app/ide/page'
 import MeetingProvider from "src/app/meeting/viewer/page";
 
@@ -7,6 +7,7 @@ import { Authenticator } from '@aws-amplify/ui-react';
 
 const LiveSession = () => {
   const [dividerPosition, setDividerPosition] = useState(50); // Initial position at 50%
+
 
   const handleDrag = useCallback((e) => {
     // Prevent default action (e.g., text selection) during drag
