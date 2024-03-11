@@ -7,6 +7,12 @@ import { headers } from "next/headers";
 export async function POST(request, {params}) {
   // Get the current user's info from your database
   // console.log(request.json());
+  const headers =   {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  }
   const req = await request.json();
   console.log(req)
 
@@ -18,9 +24,7 @@ export async function POST(request, {params}) {
     catch(error){
         return new NextResponse(JSON.stringify({ message: 'Unauthenticated' }), {
             status: 401,
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: headers,
             });
     }
 
@@ -31,9 +35,7 @@ export async function POST(request, {params}) {
         // Using NextResponse to send a 400 status code
         return new NextResponse(JSON.stringify({ message: 'Webinar ID and User ID are required' }), {
           status: 400,
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: headers,
         });
     }
 
@@ -45,17 +47,13 @@ export async function POST(request, {params}) {
       // Using NextResponse to send a 200 status code and response body
       return new NextResponse(JSON.stringify(result.rows[0]), {
         status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: headers,
       });
   } catch (error) {
     console.error(error);
     return new NextResponse(JSON.stringify({ message: error.detail }), {
       status: 500,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: headers,
     });
   }
 

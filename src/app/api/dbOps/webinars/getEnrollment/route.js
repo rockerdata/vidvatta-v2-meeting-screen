@@ -1,10 +1,17 @@
 import {pool} from 'src/app/api/dbOps/db'
 import { NextResponse } from "next/server";
 import { decodeJWT } from 'aws-amplify/auth';
-import { headers } from "next/headers";
 
 export async function POST(request ,{ params }) {
   // console.log(request.json());
+
+  const headers =   {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  }
+
   const req = await request.json();
   console.log(req)
   const headersList = headers();
@@ -15,9 +22,7 @@ export async function POST(request ,{ params }) {
     catch(error){
         return new NextResponse(JSON.stringify({ message: 'Unauthenticated' }), {
             status: 401,
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: headers,
             });
     }
 
@@ -28,9 +33,7 @@ export async function POST(request ,{ params }) {
             // Using NextResponse to send a 400 status code
             return new NextResponse(JSON.stringify({ message: 'Webinar ID and User ID are required' }), {
             status: 400,
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: headers,
             });
         }
 
@@ -49,9 +52,7 @@ export async function POST(request ,{ params }) {
         console.error(error);
         return new NextResponse(JSON.stringify({ message: 'Internal server error' }), {
           status: 500,
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: headers,
         });        
     }
 
